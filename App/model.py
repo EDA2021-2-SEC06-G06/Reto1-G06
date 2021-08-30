@@ -37,7 +37,24 @@ los mismos.
 
 # Construccion de modelos
 
+def newCatalog():
+    """
+    Inicializa el catálogo de obras.
+    """
+    catalog = {"artists": None,
+               "artworks": None}
+
+    return catalog
+
+
 # Funciones para agregar informacion al catalogo
+
+def addArtist(catalog, artist):
+    pass
+
+
+def addArtwork(catalog, artwork):
+    pass
 
 # Funciones para creacion de datos
 

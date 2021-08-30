@@ -36,8 +36,28 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("0- Cargar información en el catálogo")
+    print("1- Consultar Requerimiento 1")
+    print("2- Consultar Requerimiento 2")
+    print("3- Consultar Requerimiento 3")
+    print("4- Consultar Requerimiento 4")
+    print("5- Consultar Requerimiento 5")
+    print("6- Consultar Requerimiento 6")
+
+
+def initCatalog():
+    """
+    Inicializa el catalogo de libros
+    """
+    return controller.initCatalog()
+
+
+def loadData(catalog):
+    """
+    Carga las obras en la estructura de datos
+    """
+    controller.loadData(catalog)
+
 
 catalog = None
 
@@ -47,10 +67,29 @@ Menu principal
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
+    if int(inputs[0]) == 0:
         print("Cargando información de los archivos ....")
+        #catalog = initCatalog()
+        #loadData(catalog)
+        #print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
+        #print('Obras cargadas: ' + str(lt.size(catalog['artworks'])))
+
+    elif int(inputs[0]) == 1:
+        pass
 
     elif int(inputs[0]) == 2:
+        pass
+
+    elif int(inputs[0]) == 3:
+        pass
+
+    elif int(inputs[0]) == 4:
+        pass
+
+    elif int(inputs[0]) == 5:
+        pass
+
+    elif int(inputs[0]) == 6:
         pass
 
     else:
