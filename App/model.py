@@ -44,17 +44,23 @@ def newCatalog():
     catalog = {"artists": None,
                "artworks": None}
 
+    catalog["artists"] = lt.newList("ARRAY_LIST")
+    catalog["artworks"] = lt.newList("ARRAY_LIST")
+
     return catalog
 
 
 # Funciones para agregar informacion al catalogo
 
 def addArtist(catalog, artist):
-    pass
-
+    # Se adiciona el artista a la lista de artistas
+    lt.addLast(catalog['artists'], artist)
+    
 
 def addArtwork(catalog, artwork):
-    pass
+    # Se adiciona la obra a la lista de obras
+    lt.addLast(catalog['artworks'], artwork)
+
 
 # Funciones para creacion de datos
 

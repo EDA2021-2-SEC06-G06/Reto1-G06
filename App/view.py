@@ -43,6 +43,7 @@ def printMenu():
     print("4- Consultar Requerimiento 4")
     print("5- Consultar Requerimiento 5")
     print("6- Consultar Requerimiento 6")
+    print("7- Salir")
 
 
 def initCatalog():
@@ -59,6 +60,19 @@ def loadData(catalog):
     controller.loadData(catalog)
 
 
+def printLast(lst, num):
+    """
+    Imprime los últimos num elementos de la lista.
+
+    Nota: Para un algoritmo de menor orden de crecimiento en el caso de la lista encadenada,
+          habría que crear un método alternativo al getElement() para este tipo de lista 
+          puesto que se recorre casi completa por cada elemento que se busca.
+    """
+    for x in range(num-1, -1,-1):
+        pos = lt.size(lst) - x
+        print(lt.getElement(lst, pos))
+
+
 catalog = None
 
 """
@@ -69,10 +83,15 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 0:
         print("Cargando información de los archivos ....")
-        #catalog = initCatalog()
-        #loadData(catalog)
-        #print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
-        #print('Obras cargadas: ' + str(lt.size(catalog['artworks'])))
+        catalog = initCatalog()
+        loadData(catalog)
+        print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
+        print('Obras cargadas: ' + str(lt.size(catalog['artworks'])))
+        print("\nÚltimos 3 artistas:")
+        printLast(catalog["artists"], 3)
+        print("\nÚltimas 3 obras:")
+        printLast(catalog["artworks"], 3)
+        print("\n")        
 
     elif int(inputs[0]) == 1:
         pass
