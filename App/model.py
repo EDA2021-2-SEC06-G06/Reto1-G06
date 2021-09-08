@@ -75,7 +75,7 @@ def get_artists_range(a_inicial,a_final,catalog):
     data_artists=catalog["artists"]
     artists_in_range=lt.newList()
     for i in data_artists:
-        if data_artists[i]["BeginDate"]>a_inicial and data_artists[i]["BeginDate"]<a_final:
+        if (data_artists[i]["BeginDate"]>a_inicial) and (data_artists[i]["BeginDate"]<a_final):
             artist=lt.getElement(data_artists,i)
             lt.addLast(artists_in_range,artist)
             
@@ -85,7 +85,7 @@ def get_artists_range(a_inicial,a_final,catalog):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compare_artists(artist1,artist2):
-    return (float (artist1["BeginDate"]) > float(artist2["BeginDate"]))
+    return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
 
 # Funciones de ordenamiento
