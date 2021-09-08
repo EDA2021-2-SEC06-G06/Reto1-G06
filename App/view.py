@@ -94,8 +94,12 @@ while True:
         print("\n")        
 
     elif int(inputs[0]) == 1:
-        pass
-
+       
+        print("En segundos procederemos a buscar los artistas nacidos en el rango de años que se requiera")
+        a_inicial=input("Por favor ingrese el año inicial:")
+        a_final=input("Por favor ingrese el año final:")
+        artistas_encontrados=controller.get_artists_range(int(a_inicial),int(a_final),catalog)
+        
     elif int(inputs[0]) == 2:
         pass
 

@@ -57,6 +57,7 @@ def loadArtists(catalog):
     artistsfile = cf.data_dir + 'Artists-utf8-small.csv'
     input_file = csv.DictReader(open(artistsfile, encoding='utf-8'))
     for artist in input_file:
+        print(artist)
         model.addArtist(catalog, artist)
 
 
@@ -71,4 +72,13 @@ def loadArtworks(catalog):
 
 # Funciones de ordenamiento
 
+def sortArtists(catalog):
+    model.sortArtists(catalog)
+
 # Funciones de consulta sobre el catálogo
+
+def get_artists_range(a_inicial,a_final,catalog):
+   
+    artists_range=model.get_artists_range(a_inicial,a_final,catalog)
+    return artists_range
+
