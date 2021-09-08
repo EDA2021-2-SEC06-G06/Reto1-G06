@@ -48,6 +48,7 @@ def loadData(catalog):
     """
     loadArtists(catalog)
     loadArtworks(catalog)
+    sortArtists(catalog)
 
 
 def loadArtists(catalog):
@@ -71,4 +72,13 @@ def loadArtworks(catalog):
 
 # Funciones de ordenamiento
 
+def sortArtists(catalog):
+    """
+    Ordena los libros por average_rating
+    """
+    model.sortArtists(catalog)
+
 # Funciones de consulta sobre el catálogo
+
+def getArtistsRange(catalog, a_inicial, a_final):
+    return model.getArtistsRangeReq1(catalog, a_inicial, a_final)

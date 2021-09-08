@@ -66,6 +66,83 @@ def addArtwork(catalog, artwork):
 
 # Funciones de consulta
 
+def binary_search(lst, column, element):
+    size = lt.size(lst)
+    low = 0
+    high = size - 1
+ 
+    while low <= high:
+        mid = (high + low) // 2
+        elem = lt.getElement(lst, mid)
+ 
+        # If element is greater, ignore left half
+        if int(elem[column]) < element:
+            low = mid + 1
+ 
+        # If element is smaller, ignore right half
+        elif int(elem[column]) > element:
+            high = mid - 1
+ 
+        # means element is present at mid
+        else:
+            return mid
+ 
+    # If we reach here, then the element was not present
+    return -1
+
+
+def getRangeReq1(artists, a_inicial, a_final):
+    """
+    Es posible cambiar el uso de BeginDate si se cargan los datos de otra manera.
+    """
+    #buscar posición de inicio
+    pos1 = binary_search(artists, "BeginDate", a_inicial) 
+    index1 = pos1-1
+    found_pos1 = False
+
+    while (not found_pos1) and index1>0:
+        prev_element = lt.getElement(artists, index1)
+
+        if int(prev_element["BeginDate"]) == a_inicial:
+            pos1 -= 1
+            index1 -= 1
+        else:
+            found_pos1 = True
+
+
+    #buscar posición final
+    pos2 = binary_search(artists, "BeginDate", a_final)
+    index2 = pos2+1
+    found_pos2 = False
+
+    while not found_pos2 and index2<=lt.size(artists):
+        next_element = lt.getElement(artists, index2)
+
+        if int(next_element["BeginDate"]) == a_final:
+            pos2 += 1
+            index2 += 1
+        else:
+            found_pos2 = True
+
+    return pos1,pos2
+
+
+def getArtistsRangeReq1(catalog, a_inicial, a_final):
+    artists = catalog['artists']
+    pos1,pos2 = getRangeReq1(artists, a_inicial, a_final)
+    artists_range = lt.newList()
+    count = pos2 - pos1 + 1
+
+    for pos in range(pos1, pos2 + 1):
+        element = lt.getElement(artists, pos)
+        lt.addLast(artists_range, element)
+
+    return artists_range, count
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+def compare_artists(artist1,artist2):
+    return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
 # Funciones de ordenamiento
+def sortArtists(catalog):
+    sa.sort(catalog['artists'],compare_artists)
