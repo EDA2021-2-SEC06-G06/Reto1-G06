@@ -72,15 +72,20 @@ def artists_required(name,begindate,end,nationality,gender):
 # Funciones de consulta
 
 def get_artists_range(a_inicial,a_final,catalog):
+    i=1
+    centinela=True
     data_artists=catalog["artists"]
     artists_in_range=lt.newList()
-    for i in range(lt.size(data_artists)):
-        artist_m= data_artists[i]["BeginDate"]
-        print(artist_m)
-        if (artist_m>a_inicial) and (artist_m<a_final):
+    while i<lt.size(data_artists) and centinela==True:
+        artist_m= lt.getElement(data_artists,i)
+        
+        if (int(artist_m['BeginDate'])>=a_inicial) and (int(artist_m['BeginDate'])<=a_final):
             artist=lt.getElement(data_artists,i)
             lt.addLast(artists_in_range,artist)
-            
+        elif (int(artist_m['BeginDate'])>a_final):
+            centinela=False
+        i+=1
+       
     return artists_in_range
 
 

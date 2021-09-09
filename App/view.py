@@ -103,10 +103,18 @@ while True:
     elif int(inputs[0]) == 1:
        
         print("En segundos procederemos a buscar los artistas nacidos en el rango de años que se requiera")
-        a_inicial=input("Por favor ingrese el año inicial:")
-        a_final=input("Por favor ingrese el año final:")
+        a_inicial=input("Por favor ingrese el año inicial: ")
+        a_final=input("Por favor ingrese el año final: ")
         artistas_encontrados=controller.get_artists_range(int(a_inicial),int(a_final),catalog)
-        
+        count=lt.size(artistas_encontrados)
+        print("\n Se encontraron " + str(count) + " artistas nacidos en el rango dado")
+        print("\nPrimeros 3 artistas:")
+        printFirst(artistas_encontrados,3)
+        print("\nUltimos 3 artistas:")
+        printLast(artistas_encontrados, 3)
+
+
+
     elif int(inputs[0]) == 2:
         pass
 
