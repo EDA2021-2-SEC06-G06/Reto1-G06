@@ -54,19 +54,52 @@ def newCatalog():
 
 def addArtist(catalog, artist):
     # Se adiciona el artista a la lista de artistas
-    Arti_r=artists_required(artist["ConstituentID"],artist["DisplayName"],artist["BeginDate"],artist["EndDate"],artist["Nationality"],artist["Gender"])
+    Arti_r=artists_required(artist["ConstituentID"],
+                            artist["DisplayName"],
+                            artist["BeginDate"],
+                            artist["EndDate"],
+                            artist["Nationality"],
+                            artist["Gender"])
     lt.addLast(catalog['artists'], Arti_r)
     
 
 def addArtwork(catalog, artwork):
     # Se adiciona la obra a la lista de obras
-    lt.addLast(catalog['artworks'], artwork)
+    Artw_r=artworks_required(artwork["ObjectID"],
+                            artwork["Title"],
+                            artwork["ConstituentID"],
+                            artwork["Date"],
+                            artwork["Medium"],
+                            artwork["Dimensions"],
+                            artwork["Classification"],
+                            artwork["Department"],
+                            artwork["DateAcquired"])
+    lt.addLast(catalog['artworks'], Artw_r)
 
 
 # Funciones para creacion de datos
-def artists_required(id,name,begindate,end,nationality,gender):
-    artist={"ID":id,'Name':name,'BeginDate':begindate,'EndDate':end,'Nationality':nationality,'Gender':gender}
+def artists_required(artistID,name,begindate,end,nationality,gender):
+    artist={"ArtistID":artistID,
+            'Name':name,
+            'BeginDate':begindate,
+            'EndDate':end,
+            'Nationality':nationality,
+            'Gender':gender}
     return artist
+
+
+def artworks_required(artworkID,title,artistID,date,medium,dimensions,classification,department,dateacquired):
+    artwork={"ArtworkID":artworkID,
+            "Title": title,
+            "ArtistID":artistID,
+            "Date":date,
+            "Medium": medium,
+            "Dimensions": dimensions,
+            "Classification": classification,
+            "Department": department,
+            "DateAcquired": dateacquired}
+    return artwork
+
 
 # Funciones de consulta
 
@@ -98,6 +131,9 @@ def binary_search(lst, column, element):
 def getRangeReq1(artists, a_inicial, a_final):
     """
     Es posible cambiar el uso de BeginDate si se cargan los datos de otra manera.
+    También se podría realizar solo una búsqueda, encontrando solamente el año inicial
+    y agregando los datos a partir de ahí hasta que se encuentre el último elemento
+    del año final.
     """
     #buscar posición de inicio
     pos1 = binary_search(artists, "BeginDate", a_inicial) 
@@ -143,10 +179,20 @@ def getArtistsRangeReq1(catalog, a_inicial, a_final):
 
     return artists_range, count
 
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compare_artists(artist1,artist2):
     return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
+
+def compare_artworks(artist1,artist2):
+    return artist1["DateAcquired"] < artist2["DateAcquired"]
+
+
 # Funciones de ordenamiento
 def sortArtists(catalog):
     sa.sort(catalog['artists'],compare_artists)
+
+
+def sortArtworks(catalog):
+    sa.sort(catalog['artworks'],compare_artworks)

@@ -49,6 +49,7 @@ def loadData(catalog):
     loadArtists(catalog)
     loadArtworks(catalog)
     sortArtists(catalog)
+    sortArtworks(catalog)
 
 
 def loadArtists(catalog):
@@ -70,13 +71,22 @@ def loadArtworks(catalog):
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
+
 # Funciones de ordenamiento
 
 def sortArtists(catalog):
     """
-    Ordena los libros por average_rating
+    Ordena los artistas por fecha de nacimiento
     """
     model.sortArtists(catalog)
+
+
+def sortArtworks(catalog):
+    """
+    Ordena las obras por fecha de adquisición
+    """
+    model.sortArtworks(catalog)
+
 
 # Funciones de consulta sobre el catálogo
 
