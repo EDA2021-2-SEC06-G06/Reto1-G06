@@ -54,7 +54,8 @@ def newCatalog():
 
 def addArtist(catalog, artist):
     # Se adiciona el artista a la lista de artistas
-    lt.addLast(catalog['artists'], artist)
+    Arti_r=artists_required(artist["ConstituentID"],artist["DisplayName"],artist["BeginDate"],artist["EndDate"],artist["Nationality"],artist["Gender"])
+    lt.addLast(catalog['artists'], Arti_r)
     
 
 def addArtwork(catalog, artwork):
@@ -63,6 +64,9 @@ def addArtwork(catalog, artwork):
 
 
 # Funciones para creacion de datos
+def artists_required(id,name,begindate,end,nationality,gender):
+    artist={"ID":id,'Name':name,'BeginDate':begindate,'EndDate':end,'Nationality':nationality,'Gender':gender}
+    return artist
 
 # Funciones de consulta
 
