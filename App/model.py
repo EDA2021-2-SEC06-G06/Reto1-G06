@@ -66,7 +66,7 @@ def addArtwork(catalog, artwork):
 
 # Funciones para creacion de datos
 def artists_required(name,begindate,end,nationality,gender):
-    artist={'name':name,'begin_date':begindate,'end':end,'nationality':nationality,'gender':gender}
+    artist={'Name':name,'BeginDate':begindate,'EndDate':end,'Nationality':nationality,'Gender':gender}
     return artist
 
 # Funciones de consulta
@@ -74,8 +74,10 @@ def artists_required(name,begindate,end,nationality,gender):
 def get_artists_range(a_inicial,a_final,catalog):
     data_artists=catalog["artists"]
     artists_in_range=lt.newList()
-    for i in data_artists:
-        if (data_artists[i]["BeginDate"]>a_inicial) and (data_artists[i]["BeginDate"]<a_final):
+    for i in range(lt.size(data_artists)):
+        artist_m= data_artists[i]["BeginDate"]
+        print(artist_m)
+        if (artist_m>a_inicial) and (artist_m<a_final):
             artist=lt.getElement(data_artists,i)
             lt.addLast(artists_in_range,artist)
             
