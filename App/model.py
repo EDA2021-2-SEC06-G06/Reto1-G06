@@ -54,18 +54,150 @@ def newCatalog():
 
 def addArtist(catalog, artist):
     # Se adiciona el artista a la lista de artistas
-    lt.addLast(catalog['artists'], artist)
+    Arti_r=artists_required(artist["ConstituentID"],
+                            artist["DisplayName"],
+                            artist["BeginDate"],
+                            artist["EndDate"],
+                            artist["Nationality"],
+                            artist["Gender"])
+    lt.addLast(catalog['artists'], Arti_r)
     
 
 def addArtwork(catalog, artwork):
     # Se adiciona la obra a la lista de obras
-    lt.addLast(catalog['artworks'], artwork)
+    Artw_r=artworks_required(artwork["ObjectID"],
+                            artwork["Title"],
+                            artwork["ConstituentID"],
+                            artwork["Date"],
+                            artwork["Medium"],
+                            artwork["Dimensions"],
+                            artwork["Classification"],
+                            artwork["Department"],
+                            artwork["DateAcquired"])
+    lt.addLast(catalog['artworks'], Artw_r)
 
 
 # Funciones para creacion de datos
+def artists_required(artistID,name,begindate,end,nationality,gender):
+    artist={"ArtistID":artistID,
+            'Name':name,
+            'BeginDate':begindate,
+            'EndDate':end,
+            'Nationality':nationality,
+            'Gender':gender}
+    return artist
+
+
+def artworks_required(artworkID,title,artistID,date,medium,dimensions,classification,department,dateacquired):
+    artwork={"ArtworkID":artworkID,
+            "Title": title,
+            "ArtistID":artistID,
+            "Date":date,
+            "Medium": medium,
+            "Dimensions": dimensions,
+            "Classification": classification,
+            "Department": department,
+            "DateAcquired": dateacquired}
+    return artwork
+
 
 # Funciones de consulta
 
+def binary_search(lst, column, element):
+    """
+    Se basó en este código en el que se encuentra en la siguiente página web:
+    https://www.geeksforgeeks.org/python-program-for-binary-search/
+    """
+
+    size = lt.size(lst)
+    low = 0
+    high = size - 1
+ 
+    while low <= high:
+        mid = (high + low) // 2
+        elem = lt.getElement(lst, mid)
+ 
+        # If element is greater, ignore left half
+        if int(elem[column]) < element:
+            low = mid + 1
+ 
+        # If element is smaller, ignore right half
+        elif int(elem[column]) > element:
+            high = mid - 1
+ 
+        # means element is present at mid
+        else:
+            return mid
+ 
+    # If we reach here, then the element was not present
+    return -1
+
+
+def getRangeReq1(artists, a_inicial, a_final):
+    """
+    Es posible cambiar el uso de BeginDate si se cargan los datos de otra manera.
+    También se podría realizar solo una búsqueda, encontrando solamente el año inicial
+    y agregando los datos a partir de ahí hasta que se encuentre el último elemento
+    del año final.
+    """
+    #buscar posición de inicio
+    pos1 = binary_search(artists, "BeginDate", a_inicial) 
+    index1 = pos1-1
+    found_pos1 = False
+
+    while (not found_pos1) and index1>0:
+        prev_element = lt.getElement(artists, index1)
+
+        if int(prev_element["BeginDate"]) == a_inicial:
+            pos1 -= 1
+            index1 -= 1
+        else:
+            found_pos1 = True
+
+
+    #buscar posición final
+    pos2 = binary_search(artists, "BeginDate", a_final)
+    index2 = pos2+1
+    found_pos2 = False
+
+    while not found_pos2 and index2<=lt.size(artists):
+        next_element = lt.getElement(artists, index2)
+
+        if int(next_element["BeginDate"]) == a_final:
+            pos2 += 1
+            index2 += 1
+        else:
+            found_pos2 = True
+
+    return pos1,pos2
+
+
+def getArtistsRangeReq1(catalog, a_inicial, a_final):
+    artists = catalog['artists']
+    pos1,pos2 = getRangeReq1(artists, a_inicial, a_final)
+    artists_range = lt.newList()
+    count = pos2 - pos1 + 1
+
+    for pos in range(pos1, pos2 + 1):
+        element = lt.getElement(artists, pos)
+        lt.addLast(artists_range, element)
+
+    return artists_range, count
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+def compare_artists(artist1,artist2):
+    return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
+
+
+def compare_artworks(artist1,artist2):
+    return artist1["DateAcquired"] < artist2["DateAcquired"]
+
 
 # Funciones de ordenamiento
+def sortArtists(catalog):
+    sa.sort(catalog['artists'],compare_artists)
+
+
+def sortArtworks(catalog):
+    sa.sort(catalog['artworks'],compare_artworks)

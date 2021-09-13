@@ -60,6 +60,14 @@ def loadData(catalog):
     controller.loadData(catalog)
 
 
+def printFirst(lst, num):
+    """
+    Imprime los primeros num elementos de la lista.
+    """
+    for pos in range(1,num+1):
+        print(lt.getElement(lst, pos))
+
+
 def printLast(lst, num):
     """
     Imprime los últimos num elementos de la lista.
@@ -91,10 +99,15 @@ while True:
         printLast(catalog["artists"], 3)
         print("\nÚltimas 3 obras:")
         printLast(catalog["artworks"], 3)
-        print("\n")        
+        print("\n")
 
     elif int(inputs[0]) == 1:
-        pass
+        a_inicial = int(input("Ingrese el año inicial: "))
+        a_final = int(input("Ingrese el año final: "))
+        req1, count = controller.getArtistsRange(catalog, a_inicial, a_final)
+        print("\n Se encontraron " + str(count) + " artistas nacidos en el rango dado")
+        printFirst(req1, 3)
+        printLast(req1, 3)
 
     elif int(inputs[0]) == 2:
         pass
