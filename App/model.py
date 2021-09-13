@@ -104,6 +104,11 @@ def artworks_required(artworkID,title,artistID,date,medium,dimensions,classifica
 # Funciones de consulta
 
 def binary_search(lst, column, element):
+    """
+    Se basó en este código en el que se encuentra en la siguiente página web:
+    https://www.geeksforgeeks.org/python-program-for-binary-search/
+    """
+
     size = lt.size(lst)
     low = 0
     high = size - 1
