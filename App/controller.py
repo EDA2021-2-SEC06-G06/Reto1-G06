@@ -31,42 +31,44 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de obras
 
-def initCatalog():
+def initCatalog(list_type):
     """
     Llama la funcion de inicializacion del catalogo del modelo.
     """
-    catalog = model.newCatalog()
+    catalog = model.newCatalog(list_type)
     return catalog
 
 
 # Funciones para la carga de datos
 
-def loadData(catalog):
+def loadData(catalog, file_size, sort_artworks, sort_type):
     """
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    loadArtists(catalog)
-    loadArtworks(catalog)
-    sortArtists(catalog)
-    sortArtworks(catalog)
+    loadArtists(catalog, file_size)
+    loadArtworks(catalog, file_size)
+    sortArtists(catalog, sort_type)
+
+    if sort_artworks == 1:
+        sortArtworks(catalog, sort_type)
 
 
-def loadArtists(catalog):
+def loadArtists(catalog, file_size):
     """
     Carga los artistas del archivo.
     """
-    artistsfile = cf.data_dir + 'Artists-utf8-small.csv'
+    artistsfile = cf.data_dir + 'Artists-utf8-' + file_size + '.csv'
     input_file = csv.DictReader(open(artistsfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
 
 
-def loadArtworks(catalog):
+def loadArtworks(catalog, file_size):
     """
     Carga las obras del archivo.
     """
-    artworksfile = cf.data_dir + 'Artworks-utf8-small.csv'
+    artworksfile = cf.data_dir + 'Artworks-utf8-' + file_size + '.csv'
     input_file = csv.DictReader(open(artworksfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
@@ -74,18 +76,18 @@ def loadArtworks(catalog):
 
 # Funciones de ordenamiento
 
-def sortArtists(catalog):
+def sortArtists(catalog, sort_type):
     """
     Ordena los artistas por fecha de nacimiento
     """
-    model.sortArtists(catalog)
+    model.sortArtists(catalog, sort_type)
 
 
-def sortArtworks(catalog):
+def sortArtworks(catalog, sort_type):
     """
     Ordena las obras por fecha de adquisición
     """
-    model.sortArtworks(catalog)
+    model.sortArtworks(catalog, sort_type)
 
 
 # Funciones de consulta sobre el catálogo

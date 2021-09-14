@@ -27,7 +27,10 @@
 
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import insertionsort as iso
+from DISClib.Algorithms.Sorting import shellsort as sso
+from DISClib.Algorithms.Sorting import mergesort as mso
+from DISClib.Algorithms.Sorting import quicksort as qso
 assert cf
 
 """
@@ -37,15 +40,19 @@ los mismos.
 
 # Construccion de modelos
 
-def newCatalog():
+def newCatalog(list_type):
     """
     Inicializa el catálogo de obras.
     """
     catalog = {"artists": None,
                "artworks": None}
 
-    catalog["artists"] = lt.newList("ARRAY_LIST")
-    catalog["artworks"] = lt.newList("ARRAY_LIST")
+    if list_type == 1:
+        catalog["artists"] = lt.newList("ARRAY_LIST")
+        catalog["artworks"] = lt.newList("ARRAY_LIST")
+    else:
+        catalog["artists"] = lt.newList()
+        catalog["artworks"] = lt.newList()
 
     return catalog
 
@@ -117,19 +124,15 @@ def binary_search(lst, column, element):
         mid = (high + low) // 2
         elem = lt.getElement(lst, mid)
  
-        # If element is greater, ignore left half
         if int(elem[column]) < element:
             low = mid + 1
  
-        # If element is smaller, ignore right half
         elif int(elem[column]) > element:
             high = mid - 1
- 
-        # means element is present at mid
+
         else:
             return mid
  
-    # If we reach here, then the element was not present
     return -1
 
 
@@ -190,14 +193,34 @@ def compare_artists(artist1,artist2):
     return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
 
-def compare_artworks(artist1,artist2):
-    return artist1["DateAcquired"] < artist2["DateAcquired"]
+def cmpArtworkByDateAcquired(artwork1,artwork2):
+    """
+    Devuelve verdadero (True) si el 'DateAcquired' de artwork1 es menores que el de artwork2
+    Args:
+    artwork1: informacion de la primera obra que incluye su valor 'DateAcquired'
+    artwork2: informacion de la segunda obra que incluye su valor 'DateAcquired'
+    """
+    return artwork1["DateAcquired"] < artwork2["DateAcquired"]
 
 
 # Funciones de ordenamiento
-def sortArtists(catalog):
-    sa.sort(catalog['artists'],compare_artists)
+def sortArtists(catalog, sort_type):
+    if sort_type == 1:
+        iso.sort(catalog['artists'],compare_artists)
+    elif sort_type == 2:
+        sso.sort(catalog['artists'],compare_artists)
+    elif sort_type == 3:
+        mso.sort(catalog['artists'],compare_artists)
+    elif sort_type == 4:
+        qso.sort(catalog['artists'],compare_artists)
 
 
-def sortArtworks(catalog):
-    sa.sort(catalog['artworks'],compare_artworks)
+def sortArtworks(catalog, sort_type):
+    if sort_type == 1:
+        iso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+    elif sort_type == 2:
+        sso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+    elif sort_type == 3:
+        mso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+    elif sort_type == 4:
+        qso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
