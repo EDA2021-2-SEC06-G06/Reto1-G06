@@ -49,13 +49,14 @@ def loadData(catalog):
     loadArtists(catalog)
     loadArtworks(catalog)
     sortArtists(catalog)
+    sortArtworks(catalog)
 
 
 def loadArtists(catalog):
     """
     Carga los artistas del archivo.
     """
-    artistsfile = cf.data_dir + 'Artists-utf8-small.csv'
+    artistsfile = cf.data_dir + 'Artists-utf8-5pct.csv'
     input_file = csv.DictReader(open(artistsfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
@@ -75,6 +76,9 @@ def loadArtworks(catalog):
 def sortArtists(catalog):
     model.sortArtists(catalog)
 
+def sortArtworks(catalog):
+    model.sortArtworks(catalog)
+
 # Funciones de consulta sobre el catálogo
 
 def get_artists_range(a_inicial,a_final,catalog):
@@ -82,3 +86,10 @@ def get_artists_range(a_inicial,a_final,catalog):
     artists_range=model.get_artists_range(a_inicial,a_final,catalog)
     return artists_range
 
+def artworks_found(date_initial,date_final,catalog):
+    works_found=model.artworks_found(date_initial,date_final,catalog)
+    return works_found
+
+def artists_found(catalog):
+    artist_found=model.artists_found(catalog)
+    return artist_found

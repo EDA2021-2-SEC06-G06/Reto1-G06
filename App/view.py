@@ -25,6 +25,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+from datetime import datetime, date
 
 
 """
@@ -116,8 +117,16 @@ while True:
 
 
     elif int(inputs[0]) == 2:
-        pass
+        print("Listar cronologicamente las adquisiciones")
+        print("Por favor ingresar la fecha en el siguiente formato AAAA-MM-DD")
+        date_1=input("Por favor ingrese la fecha inicial: ")
+        date_2=input("Por favor ingrese la fecha final: ")
+        date_initial=datetime.strptime(date_1, "%Y-%m-%d")
+        date_final=datetime.strptime(date_2, "%Y-%m-%d")
+        obras_encontradas=controller.artworks_found(date_initial,date_final,catalog)
 
+        find_artistists=controller.artists_found(catalog)
+        print(find_artistists)
     elif int(inputs[0]) == 3:
         pass
 
