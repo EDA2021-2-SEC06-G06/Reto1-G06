@@ -27,6 +27,9 @@ from DISClib.ADT import list as lt
 from time import process_time
 assert cf
 
+default_limit = 1000 
+sys.setrecursionlimit(default_limit*10)
+
 
 """
 La vista se encarga de la interacción con el usuario
