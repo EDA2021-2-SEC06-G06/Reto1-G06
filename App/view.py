@@ -27,6 +27,8 @@ from DISClib.ADT import list as lt
 from time import process_time
 assert cf
 
+default_limit = 1000
+sys.setrecursionlimit(default_limit*10)
 
 """
 La vista se encarga de la interacción con el usuario
@@ -36,7 +38,7 @@ operación solicitada
 """
 
 def printMenu():
-    print("\n-----------------------------------------")
+    print("\n\n-----------------------------------------")
     print("Bienvenido al menú de opciones")
     print("-----------------------------------------")
     print("Opciones preliminares")
@@ -55,10 +57,11 @@ def printMenu():
 
 
 def printSortMenu():
+    print("\nAlgoritmos de ordenamiento:")
     print("1- Insertion Sort")
     print("2- Shell Sort")
     print("3- Merge Sort")
-    print("4- Quick Sort")
+    print("4- Quick Sort\n")
 
 
 def initCatalog(list_type):
@@ -99,7 +102,8 @@ def printLast(lst, num):
 catalog = None
 file_size = "small"
 list_type = "ARRAY_LIST"
-sort_type = 2
+sort_artworks = 1
+sort_type = 3
 
 """
 Menu principal
@@ -111,27 +115,27 @@ while True:
 
     if int(inputs[0]) == 1:
         #Seleccionar archivo a utilizar como muestra
-        print("Para cada archivo, existen muestras con los siguientes tamaños:")
-        print("small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large\n")
-        file_size = input("Ingrese el tamaño de la muestra que desea utilizar: ")
+        #print("Para cada archivo, existen muestras con los siguientes tamaños:")
+        #print("small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large\n")
+        #file_size = input("Ingrese el tamaño de la muestra que desea utilizar: ")
 
         #Seleccionar tipo de lista
-        print("\n ¿Qué tipo de lista desea utilizar para crear el catálogo?")
-        print("1- Arreglo (ARRAY_LIST)")
-        print("2- Lista encadenada (SINGLE_LINKED)")
-        list_type = int(input())
+        #print("\n ¿Qué tipo de lista desea utilizar para crear el catálogo?")
+        #print("1- Arreglo (ARRAY_LIST)")
+        #print("2- Lista encadenada (SINGLE_LINKED)")
+        #list_type = int(input())
 
         #Preguntar si ordenar obras al cargar datos
-        print("\nPara facilitar el Requerimiento 2, es posible ordenar las obras por fecha de adquisición")
-        print("apenas se cargan los archivos. Sin embargo, también es posible ordenarlas manualmente por")
-        print("medio de la opción 2 del menú.")
-        print("¿Desea que la información de las obras sea ordenada automáticamente al cargar los archivos?")
-        print("1- Sí")
-        print("2- No")
-        sort_artworks = int(input("Digite aquí su respuesta: "))
+        #print("\nPara facilitar el Requerimiento 2, es posible ordenar las obras por fecha de adquisición")
+        #print("apenas se cargan los archivos. Sin embargo, también es posible ordenarlas manualmente por")
+        #print("medio de la opción 2 del menú.")
+        #print("¿Desea que la información de las obras sea ordenada automáticamente al cargar los archivos?")
+        #print("1- Sí")
+        #print("2- No")
+        #sort_artworks = int(input("Digite aquí su respuesta: "))
 
         #Cargar archivos
-        print("Cargando información de los archivos ....")
+        print("\nCargando información de los archivos ....")
         catalog = initCatalog(list_type)
         loadData(catalog, file_size, sort_artworks, sort_type)
         print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
