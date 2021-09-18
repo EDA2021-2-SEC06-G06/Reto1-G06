@@ -80,7 +80,7 @@ def loadData(catalog, file_size, sort_artworks, sort_type):
 
 def printFirst(lst, num):
     """
-    Imprime los primeros num elementos de la lista.
+    Imprime los primeros num elementos de la lista
     """
     for pos in range(1,num+1):
         print(lt.getElement(lst, pos))
