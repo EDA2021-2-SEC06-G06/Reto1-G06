@@ -48,7 +48,7 @@ def loadData(catalog, file_size, sort_artworks, sort_type):
     """
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
-    sortArtists(catalog, sort_type)
+    sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
 
     if sort_artworks == 1:
         sortArtworks(catalog, sort_type)
@@ -92,5 +92,9 @@ def sortArtworks(catalog, sort_type):
 
 # Funciones de consulta sobre el catálogo
 
-def getArtistsRange(catalog, a_inicial, a_final):
-    return model.getArtistsRangeReq1(catalog, a_inicial, a_final)
+def getArtistsRange(catalog, date_initial, date_final):
+    return model.getArtistsRangeReq1(catalog, date_initial, date_final)
+
+
+def getArtworksRange(catalog, date_initial, date_final):
+    return model.getArtworksInfoReq2(catalog, date_initial, date_final)
