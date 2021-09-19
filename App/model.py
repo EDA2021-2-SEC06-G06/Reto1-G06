@@ -286,7 +286,7 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
             centinela = True
 
             #Recorrer el catálogo de autores para buscar el nombre correspondiente a cada ID
-            while j<artists_size and centinela:
+            while j<=artists_size and centinela:
                 artist=lt.getElement(artists,j)
                 constituentID=artist["ArtistID"]
 
@@ -317,6 +317,80 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
     return Artworks_final,artworks_count,purchase_count
 
 
+"Requerimiento 5"
+def calculateDimensionsReq5(depth, height, lenght, width, diameter):
+    """
+    Calcula las dimensiones físicas (área o volumen) de cada obra dependiendo de la información que
+    se brinde. Se utilizan unidades de metro
+    """
+    data = lt.newList("ARRAY_LIST")
+    lt.addLast(data, depth)
+    lt.addLast(data, height)
+    lt.addLast(data, lenght)
+    lt.addLast(data, width)
+    lt.addLast(data, diameter)
+    
+    dimensions_count = 0
+    no_dimensions = True
+    ans = -1
+
+    pos = 1
+    size = lt.size(data)
+
+    #Se evalúa cada dimensión para saber cuántas tienen información útil
+    while pos<=size:
+        dimension = lt.getElement(data, pos)
+        if (dimension != "") and (dimension != "0"):
+            lt.changeInfo(data, pos, float(dimension))
+            dimensions_count += 1
+            no_dimensions = False
+        else:
+            lt.changeInfo(data, pos, 1)
+        pos += 1
+
+    #Se calcula el factor de conversión a unidades de metro
+    factor = 10**(-2*dimensions_count)
+
+    if no_dimensions==False:
+        if diameter != "":
+            diameter = lt.getElement(data, 5)
+            height = lt.getElement(data, 2)
+            ans = 3.1416 * ((diameter/2)**2) * height * factor/100
+        
+        else:
+            depth = lt.getElement(data, 1)
+            height = lt.getElement(data, 2)
+            lenght = lt.getElement(data, 3)
+            width = lt.getElement(data, 4)
+            ans =  depth * height * lenght * width * factor
+
+    return ans
+
+
+def calculateSingularCostReq5(depth, height, lenght, width, diameter, weight):
+    """
+    Calcula el costo de transportar cierta obra dadas sus dimensiones físicas y su peso.
+    Las obras con volumen tienen un costo de transporte muy inferior, puesto que 1cm^2 = 10^-4 m^2,
+    mientras que 1cm^3 = 10^-6 m^3
+    """
+    dimensions = calculateDimensionsReq5(depth, height, lenght, width, diameter)
+
+    if dimensions == -1:
+        dcost = 48
+    else:
+        dcost = dimensions*72
+    
+    max = dcost
+
+    if (weight!="") and (weight!="0"):
+        wcost = float(weight)*72
+
+        if wcost > max:
+            max = wcost
+
+    return round(max,5)
+
+
 #TAREA PENDIENTE: ¿Cómo se implementaría si la lista de artistas estuviera organizada según Constituent ID?
 #Esto reduciría la complejidad temporal del algoritmo (sin tener en cuenta el ordenamiento)
 #def getAuthorsReq2IfArtistsSortedByID(catalog, artworks):
@@ -328,11 +402,11 @@ def cmpArtistByBeginDate(artist1,artist2):
     return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
 
-def BeginDateLowerThanGivenDate(artist, date):
+def BeginDateLowerThanGivenDate(artist, date):            #Requerimiento 1
     return float(artist["BeginDate"]) < date
 
 
-def BeginDateGreaterThanGivenDate(artist, date):
+def BeginDateGreaterThanGivenDate(artist, date):          #Requerimiento 1
     return float(artist["BeginDate"]) > date
 
 
@@ -347,12 +421,16 @@ def cmpArtworkByDateAcquired(artwork1,artwork2):
     return artwork1["DateAcquired"] < artwork2["DateAcquired"]
 
 
-def DateAcquiredLowerThanGivenDate(artwork,date):
+def DateAcquiredLowerThanGivenDate(artwork,date):         #Requerimiento 2
     return artwork["DateAcquired"] < date
 
 
-def DateAcquiredGreaterThanGivenDate(artwork,date):
+def DateAcquiredGreaterThanGivenDate(artwork,date):       #Requerimiento 2
     return artwork["DateAcquired"] > date
+
+
+def cmpArtworkByDate(artwork1,artwork2):                  #Requerimiento 5
+    int(artwork1["Date"]) < int(artwork2["Date"])
 
 
 # Funciones de ordenamiento
