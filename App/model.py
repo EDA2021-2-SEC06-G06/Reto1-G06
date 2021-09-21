@@ -33,7 +33,6 @@ from DISClib.Algorithms.Sorting import insertionsort as iso
 from DISClib.Algorithms.Sorting import shellsort as sso
 from DISClib.Algorithms.Sorting import mergesort as mso
 from DISClib.Algorithms.Sorting import quicksort as qso
-from datetime import datetime
 assert cf
 
 """
@@ -49,16 +48,14 @@ def newCatalog(list_type):
     """
     catalog = {"artists": None,
                "artworks": None}
-               #"artwork_2":None}
 
     if list_type == 1:
         catalog["artists"] = lt.newList("ARRAY_LIST")
         catalog["artworks"] = lt.newList("ARRAY_LIST")
-        #catalog['artwork_2'] = lt.newList("ARRAY_LIST") #Probando
+        
     else:
         catalog["artists"] = lt.newList()
         catalog["artworks"] = lt.newList()
-        #catalog['artwork_2'] = lt.newList() #Probando
 
     return catalog
 
@@ -77,12 +74,9 @@ def addArtist(catalog, artist):
     
 
 def addArtwork(catalog, artwork):
-    # Se adiciona la obra a la lista de obras
-    fecha_adquisicion=artwork['DateAcquired']
-    if fecha_adquisicion=="":
-        fecha_adquisicion="1111-01-01"
-    Date_Acquired=datetime.strptime(fecha_adquisicion, "%Y-%m-%d")
-    
+    """
+    Se adiciona la obra a la lista de obras
+    """
     Artw_r=artworks_required(artwork["ObjectID"],
                             artwork["Title"],
                             artwork["ConstituentID"],
@@ -91,14 +85,43 @@ def addArtwork(catalog, artwork):
                             artwork["Dimensions"],
                             artwork["Classification"],
                             artwork["Department"],
-                            Date_Acquired,
+                            artwork['DateAcquired'],
                             artwork['CreditLine'],
                             artwork["URL"])
+
+    addArtistsNames(catalog, Artw_r)
 
     lt.addLast(catalog['artworks'], Artw_r)
 
 
 # Funciones para creacion de datos
+
+def addArtistsNames(catalog, artwork):
+    """
+    Añade en la información de cada obra los nombres de sus autores
+    """
+    artists = catalog["artists"]
+    authors_IDs = artwork["ArtistID"]
+    authors_IDs = splitAuthorsIDs(authors_IDs)
+    authors = ""
+
+    #Revisar cada elemento de la cola de IDs de autores         
+    while lt.size(authors_IDs)>0: #No realiza más de X ciclos
+        authorID = lt.firstElement(authors_IDs)    
+        j = binary_search(artists, authorID, AuthorIDLowerThanGivenID, AuthorIDGreaterThanGivenID)
+        artist = lt.getElement(artists, j)
+        author=artist["Name"]
+
+        if authors == "":                
+            authors = author
+        else:
+            authors += ", " + author
+
+        lt.removeFirst(authors_IDs)
+
+    artwork["ArtistName"] = authors
+
+
 def artists_required(artistID,name,begindate,end,nationality,gender):
     artist={"ArtistID":artistID,
             'Name':name,
@@ -114,6 +137,7 @@ def artworks_required(artworkID,title,artistID,date,medium,dimensions,
     artwork={"ArtworkID":artworkID,
             "Title": title,
             "ArtistID":artistID,
+            "ArtistName": "",
             "Date":date,
             "Medium": medium,
             "Dimensions": dimensions,
@@ -140,7 +164,7 @@ def binary_search(lst, value, lowercmpfunction, greatercmpfunction):
     while low <= high:
         mid = (high + low) // 2
         indexed_element = lt.getElement(lst, mid)
- 
+        
         if lowercmpfunction(indexed_element, value):
             low = mid + 1
  
@@ -158,20 +182,20 @@ def splitAuthorsIDs(authorsIDs):
     authors = authors.replace("[","")
     authors=authors.replace("]","")
 
-    authors_queue = lt.newList()
+    authorsIDs_list = lt.newList()
     centinela = True
 
     while centinela:
         if " " in authors:
             pos = authors.find(" ")
-            lt.addLast(authors_queue, authors[0:pos])
+            lt.addLast(authorsIDs_list, authors[0:pos])
             authors = authors[pos + 1:]
 
         if " " not in authors:
-            lt.addLast(authors_queue, authors)
+            lt.addLast(authorsIDs_list, authors)
             centinela = False
 
-    return authors_queue
+    return authorsIDs_list
 
 
 "Requerimiento 1"
@@ -216,34 +240,45 @@ def getArtistsRangeReq1(catalog, date_initial, date_final):
 
 
 "Requerimiento 2"
-def getInitPosReq2(artworks, date_initial):
-    pos1 = binary_search(artworks, date_initial, DateAcquiredLowerThanGivenDate, DateAcquiredGreaterThanGivenDate) 
-    index1 = pos1-1
-    found_pos1 = False
+def binary_searchReq2(lst, value, lowercmpfunction, greatercmpfunction):
+    """
+    Se basó en este código en el que se encuentra en la siguiente página web:
+    https://www.geeksforgeeks.org/python-program-for-binary-search/
+    """
 
-    #Se compara pos con la posición anterior para hallar la primera posición en la que aparece date_initial
-    while (not found_pos1) and index1>0:
-        prev_element = lt.getElement(artworks, index1)
+    size = lt.size(lst)
+    low = 0
+    high = size - 1
+ 
+    while low <= high:
+        mid = (high + low) // 2
+        indexed_element = lt.getElement(lst, mid)
+        
+        if lowercmpfunction(indexed_element, value):
+            low = mid + 1
+ 
+        elif greatercmpfunction(indexed_element, value):
+            high = mid - 1
 
-        if prev_element["DateAcquired"] == date_initial:
-            pos1 -= 1
-            index1 -= 1
         else:
-            found_pos1 = True
+            return mid
 
-    return pos1
+        if (low==(high-1)) or (low==high):
+            return low
+ 
+    return -1
 
 
 def getArtworksRangeReq2(catalog, date_initial, date_final):
     artworks = catalog["artworks"]
     data_artworks = queue.newQueue()
     
-    pos = getInitPosReq2(artworks, date_initial)
+    pos = binary_searchReq2(artworks, date_initial, DateAcquiredLowerThanGivenDate, DateAcquiredGreaterThanGivenDate) 
     size = lt.size(artworks)
     artworks_count = 0
     purchase_count = 0
     centinela = True
-
+    
     #Se parte de pos y se añaden a una cola todos los elementos en el rango
     while pos<size and centinela:
         artworks_a = lt.getElement(artworks,pos)
@@ -264,8 +299,6 @@ def getArtworksRangeReq2(catalog, date_initial, date_final):
 
 
 def getArtworksInfoReq2(catalog, date_initial, date_final):
-    sortArtists(catalog, 3, cmpArtistByAuthorID)
-    artists=catalog["artists"]
     data_artworks,artworks_count,purchase_count = getArtworksRangeReq2(catalog, date_initial, date_final)
     Artworks_final=lt.newList("ARRAY_LIST") #ARRAY_LIST para acceder a cada posición con tiempo constante
 
@@ -275,38 +308,20 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
     #Se recorre la lista de obras encontradas para hallar los autores de cada una
     while queue.size(data_artworks)>0:
         artwork = queue.peek(data_artworks)
-        authors_IDs = artwork["ArtistID"]
-        authors_IDs = splitAuthorsIDs(authors_IDs)
-        authors = ""
         data_necessary=lt.newList("ARRAY_LIST") 
         
-        #TAREA PENDIENTE: Determinar el máximo de artistas en una obra (X)
+        """#TAREA PENDIENTE: Determinar el máximo de artistas en una obra (X)
         #if queue.size(authors_IDs)>max:
-        #    max = queue.size(authors_IDs)
-
-        #Revisar cada elemento de la cola de IDs de autores         
-        while lt.size(authors_IDs)>0: #No realiza más de X ciclos
-            authorID = lt.firstElement(authors_IDs)    
-            j = binary_search(artists, authorID, AuthorIDLowerThanGivenID, AuthorIDGreaterThanGivenID)
-            artist = lt.getElement(artists, j)
-            author=artist["Name"]
-
-            if authors == "":
-                authors = author
-            else:
-                authors += ", " + author
-
-            lt.removeFirst(authors_IDs)
+        #    max = queue.size(authors_IDs)"""
         
         #Almacenar la información relevante
         lt.addLast(data_necessary, artwork["ArtworkID"])          #pos 1: ID de la obra
         lt.addLast(data_necessary, artwork["Title"])              #pos 2: Título de la obra
-        lt.addLast(data_necessary, authors)                       #pos 3: Nombres de los autores
+        lt.addLast(data_necessary, artwork["ArtistName"])         #pos 3: Nombres de los autores
         lt.addLast(data_necessary, artwork["Medium"])             #pos 4: Técnica de la obra
         lt.addLast(data_necessary, artwork["Dimensions"])         #pos 5: Dimensiones de la obra
         lt.addLast(data_necessary, artwork["Date"])               #pos 6: Fecha de la obra
-        lt.addLast(data_necessary,
-         artwork["DateAcquired"].strftime("%Y-%m-%d, %H:%M:%S"))  #pos 7: Fecha de adquisición de la obra
+        lt.addLast(data_necessary,artwork["DateAcquired"])        #pos 7: Fecha de adquisición de la obra
     
         lt.addLast(Artworks_final,data_necessary)       
 
@@ -364,11 +379,14 @@ def getNationalityCountReq4(catalog):
 
     while lt.size(nationalities)>0:
         nationality = lt.removeFirst(nationalities)
-        country_stack = stack.newStack()
+        country_stack = stack.newStack() #¿Buena idea hacer un stack?
+        artworks_info = lt.newList("ARRAY_LIST")
 
         stack.push(country_stack, nationality)
+        stack.push(country_stack, artworks_info)
         stack.push(country_stack, 0)
-
+        stack.push(country_stack, 0)
+        
         lt.addLast(final_list, country_stack)
 
     pos_artworks = 1
@@ -376,6 +394,16 @@ def getNationalityCountReq4(catalog):
 
     while pos_artworks<=size_artworks: #Realiza size(artworks) ciclos
         artwork = lt.getElement(artworks, pos_artworks)
+
+        artwork_info = stack.newStack()
+        stack.push(artwork_info, artwork["Dimensions"])
+        stack.push(artwork_info, artwork["Medium"])
+        stack.push(artwork_info, artwork["Date"])
+        stack.push(artwork_info, artwork["ArtistName"])
+        stack.push(artwork_info, artwork["Title"])
+        stack.push(artwork_info, artwork["ArtworkID"])
+        artworkNotInList = True
+
         authorsIDS = artwork["ArtistID"]
         authors_queue = splitAuthorsIDs(authorsIDS)
         
@@ -394,7 +422,18 @@ def getNationalityCountReq4(catalog):
                     found = True
                     country_stack = lt.getElement(final_list, pos_nationality)
                     country_count = stack.pop(country_stack)
+                    artwork_count = stack.pop(country_stack)
+                    artworks_info = stack.pop(country_stack)
+                    
+                    if artworkNotInList:
+                        lt.addLast(artworks_info, artwork_info)
+                        artworkNotInList = False
+                        artwork_count += 1
+
                     country_count += 1
+                    
+                    stack.push(country_stack, artworks_info)
+                    stack.push(country_stack, artwork_count)
                     stack.push(country_stack, country_count)
 
                 pos_nationality += 1
