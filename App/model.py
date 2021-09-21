@@ -92,7 +92,8 @@ def addArtwork(catalog, artwork):
                             artwork["Classification"],
                             artwork["Department"],
                             Date_Acquired,
-                            artwork['CreditLine'])
+                            artwork['CreditLine'],
+                            artwork["URL"])
 
     lt.addLast(catalog['artworks'], Artw_r)
 
@@ -109,7 +110,7 @@ def artists_required(artistID,name,begindate,end,nationality,gender):
 
 
 def artworks_required(artworkID,title,artistID,date,medium,dimensions,
-                    classification,department,dateacquired,creditline):
+                    classification,department,dateacquired,creditline, url):
     artwork={"ArtworkID":artworkID,
             "Title": title,
             "ArtistID":artistID,
@@ -119,7 +120,8 @@ def artworks_required(artworkID,title,artistID,date,medium,dimensions,
             "Classification": classification,
             "Department": department,
             "DateAcquired": dateacquired,
-            "CreditLine": creditline}
+            "CreditLine": creditline,
+            "URL": url}
     return artwork
 
 
@@ -160,9 +162,10 @@ def splitAuthorsIDs(authorsIDs):
     centinela = True
 
     while centinela:
-        pos = authors.find(" ")
-        lt.addLast(authors_queue, authors[0:pos])
-        authors = authors[pos + 1:]
+        if " " in authors:
+            pos = authors.find(" ")
+            lt.addLast(authors_queue, authors[0:pos])
+            authors = authors[pos + 1:]
 
         if " " not in authors:
             lt.addLast(authors_queue, authors)
@@ -191,22 +194,21 @@ def getInitPosReq1(artists, date_initial):
 
 def getArtistsRangeReq1(catalog, date_initial, date_final):
     artists = catalog['artists']
-    pos = getInitPosReq1(artists, date_initial, date_final)
+    pos = getInitPosReq1(artists, date_initial)
     artists_range = lt.newList()
     size = lt.size(artists)
 
     artists_count = 0
-    centinela = True
 
-    while centinela and pos<size:
+    while pos<=size:
         artist = lt.getElement(artists, pos)
 
-        if (artist["BeginDate"]>=date_initial) and (pos<=date_final):
+        if (int(artist["BeginDate"])>=date_initial) and (int(artist["BeginDate"])<=date_final):
             lt.addLast(artists_range, artist)
             artists_count += 1
         
-        elif artist["BeginDate"] > date_final:
-            centinela = False
+        elif int(artist["BeginDate"]) > date_final:
+            break
 
         pos += 1
 
@@ -223,7 +225,7 @@ def getInitPosReq2(artworks, date_initial):
     while (not found_pos1) and index1>0:
         prev_element = lt.getElement(artworks, index1)
 
-        if int(prev_element["DateAcquired"]) == date_initial:
+        if prev_element["DateAcquired"] == date_initial:
             pos1 -= 1
             index1 -= 1
         else:
@@ -262,6 +264,7 @@ def getArtworksRangeReq2(catalog, date_initial, date_final):
 
 
 def getArtworksInfoReq2(catalog, date_initial, date_final):
+    sortArtists(catalog, 3, cmpArtistByAuthorID)
     artists=catalog["artists"]
     data_artworks,artworks_count,purchase_count = getArtworksRangeReq2(catalog, date_initial, date_final)
     Artworks_final=lt.newList("ARRAY_LIST") #ARRAY_LIST para acceder a cada posición con tiempo constante
@@ -275,11 +278,8 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
         authors_IDs = artwork["ArtistID"]
         authors_IDs = splitAuthorsIDs(authors_IDs)
         authors = ""
-        data_necessary=lt.newList()
-
-        j=1
-        artists_size = lt.size(artists)  
-
+        data_necessary=lt.newList("ARRAY_LIST") 
+        
         #TAREA PENDIENTE: Determinar el máximo de artistas en una obra (X)
         #if queue.size(authors_IDs)>max:
         #    max = queue.size(authors_IDs)
@@ -287,33 +287,26 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
         #Revisar cada elemento de la cola de IDs de autores         
         while lt.size(authors_IDs)>0: #No realiza más de X ciclos
             authorID = lt.firstElement(authors_IDs)    
-            j = 1
-            centinela = True
+            j = binary_search(artists, authorID, AuthorIDLowerThanGivenID, AuthorIDGreaterThanGivenID)
+            artist = lt.getElement(artists, j)
+            author=artist["Name"]
 
-            #Recorrer el catálogo de autores para buscar el nombre correspondiente a cada ID
-            while j<=artists_size and centinela:
-                artist=lt.getElement(artists,j)
-                constituentID=artist["ArtistID"]
+            if authors == "":
+                authors = author
+            else:
+                authors += ", " + author
 
-                if int(authorID)==int(constituentID):
-                    author=artist["Name"]
-                        
-                    if authors == "":
-                        authors = author
-                    else:
-                        authors += ", " + author
-
-                    centinela=False
-                    lt.removeFirst(authors_IDs)
-
-                j+=1  
+            lt.removeFirst(authors_IDs)
         
         #Almacenar la información relevante
-        lt.addLast(data_necessary, artwork["Title"])      #pos 1: Título de la obra
-        lt.addLast(data_necessary, authors)               #pos 2: Nombres de los autores
-        lt.addLast(data_necessary, artwork["Date"])       #pos 3: Fecha de la obra
-        lt.addLast(data_necessary, artwork["Medium"])     #pos 4: Técnica de la obra
-        lt.addLast(data_necessary, artwork["Dimensions"]) #pos 5: Dimensiones de la obra
+        lt.addLast(data_necessary, artwork["ArtworkID"])          #pos 1: ID de la obra
+        lt.addLast(data_necessary, artwork["Title"])              #pos 2: Título de la obra
+        lt.addLast(data_necessary, authors)                       #pos 3: Nombres de los autores
+        lt.addLast(data_necessary, artwork["Medium"])             #pos 4: Técnica de la obra
+        lt.addLast(data_necessary, artwork["Dimensions"])         #pos 5: Dimensiones de la obra
+        lt.addLast(data_necessary, artwork["Date"])               #pos 6: Fecha de la obra
+        lt.addLast(data_necessary,
+         artwork["DateAcquired"].strftime("%Y-%m-%d, %H:%M:%S"))  #pos 7: Fecha de adquisición de la obra
     
         lt.addLast(Artworks_final,data_necessary)       
 
@@ -504,6 +497,10 @@ def BeginDateGreaterThanGivenDate(artist, date):          #Requerimiento 1
     return float(artist["BeginDate"]) > date
 
 
+def cmpArtistByAuthorID(artist1, artist2):                #Requerimiento 2
+    return artist1["ArtistID"] < artist2["ArtistID"]
+
+
 "Para Obras"
 def cmpArtworkByDateAcquired(artwork1,artwork2):
     """
@@ -521,6 +518,14 @@ def DateAcquiredLowerThanGivenDate(artwork,date):         #Requerimiento 2
 
 def DateAcquiredGreaterThanGivenDate(artwork,date):       #Requerimiento 2
     return artwork["DateAcquired"] > date
+
+
+def AuthorIDLowerThanGivenID(artist, id):                 #Requerimiento 2
+    return artist["ArtistID"] < id
+
+
+def AuthorIDGreaterThanGivenID(artist, id):               #Requerimiento 2
+    return artist["ArtistID"] > id
 
 
 def cmpByNumAuthors(nationality1, nationality2):          #Requerimiento 4
