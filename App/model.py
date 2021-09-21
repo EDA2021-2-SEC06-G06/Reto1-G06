@@ -151,6 +151,26 @@ def binary_search(lst, value, lowercmpfunction, greatercmpfunction):
     return -1
 
 
+def splitAuthorsIDs(authorsIDs):
+    authors=authorsIDs.replace(",","")
+    authors = authors.replace("[","")
+    authors=authors.replace("]","")
+
+    authors_queue = lt.newList()
+    centinela = True
+
+    while centinela:
+        pos = authors.find(" ")
+        lt.addLast(authors_queue, authors[0:pos])
+        authors = authors[pos + 1:]
+
+        if " " not in authors:
+            lt.addLast(authors_queue, authors)
+            centinela = False
+
+    return authors_queue
+
+
 "Requerimiento 1"
 def getInitPosReq1(artists, date_initial):
     pos1 = binary_search(artists, date_initial, BeginDateLowerThanGivenDate, BeginDateGreaterThanGivenDate) 
@@ -194,21 +214,6 @@ def getArtistsRangeReq1(catalog, date_initial, date_final):
 
 
 "Requerimiento 2"
-def splitAuthorsIDsReq2(authorsIDs):
-    authors = authorsIDs.replace("[","")
-    authors=authors.replace("]","")
-    authors=authors.replace(",","")
-    
-    authors_list = queue.newQueue()
-
-    while " " in authors:
-        pos = authors.find(" ")
-        queue.enqueue(authors_list, authors[0:pos])
-        authors = authors[pos + 1:]
-
-    return authors_list
-
-
 def getInitPosReq2(artworks, date_initial):
     pos1 = binary_search(artworks, date_initial, DateAcquiredLowerThanGivenDate, DateAcquiredGreaterThanGivenDate) 
     index1 = pos1-1
@@ -268,7 +273,7 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
     while queue.size(data_artworks)>0:
         artwork = queue.peek(data_artworks)
         authors_IDs = artwork["ArtistID"]
-        authors_IDs = splitAuthorsIDsReq2(authors_IDs)
+        authors_IDs = splitAuthorsIDs(authors_IDs)
         authors = ""
         data_necessary=lt.newList()
 
@@ -280,8 +285,8 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
         #    max = queue.size(authors_IDs)
 
         #Revisar cada elemento de la cola de IDs de autores         
-        while queue.size(authors_IDs)>0: #No realiza más de X ciclos
-            authorID = queue.peek(authors_IDs)    
+        while lt.size(authors_IDs)>0: #No realiza más de X ciclos
+            authorID = lt.firstElement(authors_IDs)    
             j = 1
             centinela = True
 
@@ -299,7 +304,7 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
                         authors += ", " + author
 
                     centinela=False
-                    queue.dequeue(authors_IDs)
+                    lt.removeFirst(authors_IDs)
 
                 j+=1  
         
@@ -315,6 +320,95 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
         queue.dequeue(data_artworks)
 
     return Artworks_final,artworks_count,purchase_count
+
+
+"Requerimiento 4"
+def nationalityListReq4(catalog):
+    """
+    Crea una lista, cuyos elementos son listas que tienen en la posición 1 una nacionalidad y en sus 
+    demás posiciones los IDs de los artistas que pertenecen a esa nacionalidad. Devuelve esta lista 
+    junto con un directorio. Complejidad O(n)
+    """
+    artists = catalog["artists"]
+    nationalities = lt.newList("ARRAY_LIST") #Lista que guarda los nombres de las nacionalidades (sin IDs)
+    nationality_list = lt.newList("ARRAY_LIST") #Lista de listas de nacionalidades-IDs
+
+    pos_artists = 1
+    size_artists = lt.size(artists)
+
+    while pos_artists <= size_artists:
+        artist = lt.getElement(artists, pos_artists)
+        nationality = artist["Nationality"]
+        artistID = artist["ArtistID"]
+
+        if (nationality == "") or (nationality=="Nationality unknown"):
+            nationality = "Unknown"
+
+        pos_nationality = lt.isPresent(nationalities, nationality)
+
+        if pos_nationality==0:
+            country = lt.newList("ARRAY_LIST") #Lista que guarda la nacionalidad y los IDs de sus artistas
+
+            lt.addLast(country, nationality) #En pos 1 se guarda la nacionalidad
+            lt.addLast(country, artistID)    #En pos>1 se guardan los IDs de los artistas correspondientes
+
+            lt.addLast(nationalities, nationality) #Se agrega la nacionalidad al haber sido operada por 1ra vez
+            lt.addLast(nationality_list, country) #Se guarda country en la misma posición que en nationalities
+
+        else:
+            country = lt.getElement(nationality_list, pos_nationality)
+            lt.addLast(country, artistID)
+        
+        pos_artists += 1
+
+    return nationality_list, nationalities
+
+
+def getNationalityCountReq4(catalog):
+    artworks = catalog["artworks"]
+    nationality_list, nationalities = nationalityListReq4(catalog)
+    final_list = lt.newList("ARRAY_LIST")
+
+    while lt.size(nationalities)>0:
+        nationality = lt.removeFirst(nationalities)
+        country_stack = stack.newStack()
+
+        stack.push(country_stack, nationality)
+        stack.push(country_stack, 0)
+
+        lt.addLast(final_list, country_stack)
+
+    pos_artworks = 1
+    size_artworks = lt.size(artworks)
+
+    while pos_artworks<=size_artworks: #Realiza size(artworks) ciclos
+        artwork = lt.getElement(artworks, pos_artworks)
+        authorsIDS = artwork["ArtistID"]
+        authors_queue = splitAuthorsIDs(authorsIDS)
+        
+        while queue.size(authors_queue)>0: #No más de X ciclos
+            authorID = queue.dequeue(authors_queue)
+
+            pos_nationality = 1
+            found = False
+            size_nationalities = lt.size(nationality_list)
+
+            while (pos_nationality<=size_nationalities) and (not found): #No más de #países ciclos
+                nationality = lt.getElement(nationality_list, pos_nationality)
+                pos_ID = lt.isPresent(nationality, authorID) #No más de #maxAutores ciclos
+
+                if pos_ID != 0:
+                    found = True
+                    country_stack = lt.getElement(final_list, pos_nationality)
+                    country_count = stack.pop(country_stack)
+                    country_count += 1
+                    stack.push(country_stack, country_count)
+
+                pos_nationality += 1
+
+        pos_artworks+=1
+    
+    return final_list
 
 
 "Requerimiento 5"
@@ -429,6 +523,10 @@ def DateAcquiredGreaterThanGivenDate(artwork,date):       #Requerimiento 2
     return artwork["DateAcquired"] > date
 
 
+def cmpByNumAuthors(nationality1, nationality2):          #Requerimiento 4
+    return stack.top(nationality1) > stack.top(nationality2)
+
+
 def cmpArtworkByDate(artwork1,artwork2):                  #Requerimiento 5
     int(artwork1["Date"]) < int(artwork2["Date"])
 
@@ -445,12 +543,16 @@ def sortArtists(catalog, sort_type, cmpfunction):
         qso.sort(catalog['artists'],cmpfunction)
 
 
-def sortArtworks(catalog, sort_type):
+def sortArtworks(catalog, sort_type, cmpfunction):
     if sort_type == 1:
-        iso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+        iso.sort(catalog['artworks'],cmpfunction)
     elif sort_type == 2:
-        sso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+        sso.sort(catalog['artworks'],cmpfunction)
     elif sort_type == 3:
-        mso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+        mso.sort(catalog['artworks'],cmpfunction)
     elif sort_type == 4:
-        qso.sort(catalog['artworks'],cmpArtworkByDateAcquired)
+        qso.sort(catalog['artworks'],cmpfunction)
+
+
+def sortReq4(final_list):
+    mso.sort(final_list, cmpByNumAuthors)

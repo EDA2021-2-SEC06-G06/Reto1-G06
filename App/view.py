@@ -24,6 +24,8 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import queue
+from DISClib.ADT import stack
 from time import process_time
 assert cf
 
@@ -96,10 +98,24 @@ def printLast(lst, num):
         print(lt.getElement(lst, pos))
 
 
+def printReq4(req4_list):
+    print ("{:<8} {:<25}".format("Nationality", "ArtWorks"))
+
+    pos = 1
+    while pos <= 10:
+        country_stack = lt.getElement(req4_list, pos)
+        num = stack.pop(country_stack)
+        country = stack.pop(country_stack)
+        print ("{:<8} {:<25}".format(country, num))
+
+        pos += 1
+
+
 catalog = None
 file_size = "small"
 list_type = "ARRAY_LIST"
-sort_type = 2
+sort_type = 3
+sort_artworks = 2
 
 """
 Menu principal
@@ -109,26 +125,26 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
 
 
-    if int(inputs[0]) == 1:
+    if int(inputs) == 1:
         #Seleccionar archivo a utilizar como muestra
-        print("Para cada archivo, existen muestras con los siguientes tamaños:")
-        print("small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large\n")
-        file_size = input("Ingrese el tamaño de la muestra que desea utilizar: ")
+        #print("Para cada archivo, existen muestras con los siguientes tamaños:")
+        #print("small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large\n")
+        #file_size = input("Ingrese el tamaño de la muestra que desea utilizar: ")
 
         #Seleccionar tipo de lista
-        print("\n ¿Qué tipo de lista desea utilizar para crear el catálogo?")
-        print("1- Arreglo (ARRAY_LIST)")
-        print("2- Lista encadenada (SINGLE_LINKED)")
-        list_type = int(input())
+        #print("\n ¿Qué tipo de lista desea utilizar para crear el catálogo?")
+        #print("1- Arreglo (ARRAY_LIST)")
+        #print("2- Lista encadenada (SINGLE_LINKED)")
+        #list_type = int(input())
 
         #Preguntar si ordenar obras al cargar datos
-        print("\nPara facilitar el Requerimiento 2, es posible ordenar las obras por fecha de adquisición")
-        print("apenas se cargan los archivos. Sin embargo, también es posible ordenarlas manualmente por")
-        print("medio de la opción 2 del menú.")
-        print("¿Desea que la información de las obras sea ordenada automáticamente al cargar los archivos?")
-        print("1- Sí")
-        print("2- No")
-        sort_artworks = int(input("Digite aquí su respuesta: "))
+        #print("\nPara facilitar el Requerimiento 2, es posible ordenar las obras por fecha de adquisición")
+        #print("apenas se cargan los archivos. Sin embargo, también es posible ordenarlas manualmente por")
+        #print("medio de la opción 2 del menú.")
+        #print("¿Desea que la información de las obras sea ordenada automáticamente al cargar los archivos?")
+        #print("1- Sí")
+        #print("2- No")
+        #sort_artworks = int(input("Digite aquí su respuesta: "))
 
         #Cargar archivos
         print("Cargando información de los archivos ....")
@@ -143,7 +159,7 @@ while True:
         print("\n")
 
 
-    elif int(inputs[0]) == 2:
+    elif int(inputs) == 2:
         printSortMenu()
         sort_type = int(input("Digite la opción que desea utilizar: "))
         if sort_type == 1:
@@ -165,32 +181,40 @@ while True:
         print("Tiempo de ejecución: " + str(running_time) + " milisegundos")
 
 
-    elif int(inputs[0]) == 10:
+    elif int(inputs) == 10:
         a_inicial = int(input("Ingrese el año inicial: "))
         a_final = int(input("Ingrese el año final: "))
-        req1, count = controller.getArtistsRange(catalog, a_inicial, a_final)
+        req1, count = controller.REQ1getArtistsRange(catalog, a_inicial, a_final)
         print("\n Se encontraron " + str(count) + " artistas nacidos en el rango dado")
         printFirst(req1, 3)
         printLast(req1, 3)
 
 
-    elif int(inputs[0]) == 20:
+    elif int(inputs) == 20:
         pass
 
 
-    elif int(inputs[0]) == 30:
+    elif int(inputs) == 30:
         pass
 
 
-    elif int(inputs[0]) == 40:
+    elif int(inputs) == 40:
+        start_time = process_time()
+        req4_list = controller.REQ4getNationalityCount(catalog)
+        stop_time = process_time()
+        running_time = (stop_time - start_time)*1000
+
+        print("\nReq 4")
+        print("Tiempo de ejecución: " + str(running_time) + " segundos")
+
+        printReq4(req4_list)
+
+
+    elif int(inputs) == 50:
         pass
 
 
-    elif int(inputs[0]) == 50:
-        pass
-
-
-    elif int(inputs[0]) == 60:
+    elif int(inputs) == 60:
         pass
 
 
