@@ -48,10 +48,10 @@ def loadData(catalog, file_size, sort_artworks, sort_type):
     """
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
-    sortArtists(catalog, sort_type)
 
     if sort_artworks == 1:
-        sortArtworks(catalog, sort_type)
+        sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
+        sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 
 
 def loadArtists(catalog, file_size):
@@ -76,21 +76,31 @@ def loadArtworks(catalog, file_size):
 
 # Funciones de ordenamiento
 
-def sortArtists(catalog, sort_type):
+def sortArtists(catalog, sort_type, cmpfunction):
     """
     Ordena los artistas por fecha de nacimiento
     """
-    model.sortArtists(catalog, sort_type)
+    model.sortArtists(catalog, sort_type, cmpfunction)
 
 
-def sortArtworks(catalog, sort_type):
+def sortArtworks(catalog, sort_type, cmpfunction):
     """
     Ordena las obras por fecha de adquisición
     """
-    model.sortArtworks(catalog, sort_type)
+    model.sortArtworks(catalog, sort_type, cmpfunction)
 
 
 # Funciones de consulta sobre el catálogo
 
-def getArtistsRange(catalog, a_inicial, a_final):
-    return model.getArtistsRangeReq1(catalog, a_inicial, a_final)
+def REQ1getArtistsRange(catalog, date_initial, date_final):
+    return model.getArtistsRangeReq1(catalog, date_initial, date_final)
+
+
+def REQ2getArtworksRange(catalog, date_initial, date_final):
+    return model.getArtworksInfoReq2(catalog, date_initial, date_final)
+
+
+def REQ4getNationalityCount(catalog):
+    final_list = model.getNationalityCountReq4(catalog)
+    model.sortReq4(final_list)
+    return final_list
