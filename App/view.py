@@ -124,11 +124,28 @@ while True:
         date_initial=datetime.strptime(date_1, "%Y-%m-%d")
         date_final=datetime.strptime(date_2, "%Y-%m-%d")
         obras_encontradas=controller.artworks_found(date_initial,date_final,catalog)
-
+        large=lt.size(obras_encontradas[0])
+        purchase=obras_encontradas[1]
         find_artistists=controller.artists_found(catalog)
-        print(find_artistists)
+        print("El MoMA adquirio "+str(large)+" obras entre "+date_1+ " y "+date_2+" , con un total de "+ str(purchase)+" obras compradas")
+        print("\nPrimeros 3 artistas:")
+        printFirst(find_artistists,3)
+        print("\nUltimos 3 artistas:")
+        printLast(find_artistists,3)
     elif int(inputs[0]) == 3:
-        pass
+        print("clasificar las obras de un artista por técnica (Individual)")
+        nombre=input("Por favor ingrese el nombre del artista: ")
+        tecnicas_artist=controller.tecnicas_artisticas(nombre,catalog)
+        obras_totales=lt.size(tecnicas_artist)
+        tecnicas_mas=controller.operaciones_req3(catalog)
+        cantidad_tecnicas=lt.size(tecnicas_mas[0])
+        tecnica_mas_usada=tecnicas_mas[1]
+        encontrar_obras=controller.encontrar_obras_con_tec(catalog,tecnica_mas_usada)
+        print(nombre+" tiene "+str(obras_totales)+" obras en MoMA")
+        print("Ademas, tiene "+str(cantidad_tecnicas)+" medios o tecnicas en sus trabajos")
+        print("La tecnica mas usada es:" +str(tecnica_mas_usada))
+        print("El artista cuenta los siguientes obras para "+str(tecnica_mas_usada))
+        print(encontrar_obras)
 
     elif int(inputs[0]) == 4:
         pass

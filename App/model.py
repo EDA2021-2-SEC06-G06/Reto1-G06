@@ -28,8 +28,12 @@
 from DISClib.DataStructures.arraylist import size
 import config as cf
 from DISClib.ADT import list as lt
+from DISClib.ADT import queue
+from DISClib.ADT import stack
 from datetime import datetime, date
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as mso
+from DISClib.Algorithms.Sorting import quicksort as qso
 assert cf
 
 """
@@ -45,11 +49,13 @@ def newCatalog():
     """
     catalog = {"artists": None,
                "artworks": None,
-               "artwork_2":None}
+               "artwork_2":None,
+               "tecnicas":None}
 
     catalog["artists"] = lt.newList("ARRAY_LIST")
     catalog["artworks"] = lt.newList("ARRAY_LIST")
     catalog['artwork_2'] = lt.newList("ARRAY_LIST")
+    catalog["tecnicas"] = lt.newList("ARRAY_LIST")
     return catalog
 
 
@@ -81,6 +87,54 @@ def artworks_required(date,title,constituentid,date_acquired,medium,dimensions,c
     artwork={'Date':date,'Title':title,'ConstituentID':constituentid,'DateAcquired':date_acquired,'Medium':medium,'Dimensions':dimensions,'CreditLine':creditline}
     return artwork
 # Funciones de consulta
+# Busqueda binaria
+
+def binary_search(lst, value, lowercmpfunction, greatercmpfunction):
+    """
+    Se basó en este código en el que se encuentra en la siguiente página web:
+    https://www.geeksforgeeks.org/python-program-for-binary-search/
+    """
+
+    size = lt.size(lst)
+    low = 0
+    high = size - 1
+ 
+    while low <= high:
+        mid = (high + low) // 2
+        indexed_element = lt.getElement(lst, mid)
+ 
+        if lowercmpfunction(indexed_element, value):
+            low = mid + 1
+ 
+        elif greatercmpfunction(indexed_element, value):
+            high = mid - 1
+
+        else:
+            return mid
+ 
+    return -1
+
+# Binary Search
+
+#def binary_search(data, elem):
+
+    low = 0
+    high = len(data) - 1
+
+    while low <= high:
+      
+        middle = (low + high)//2
+       
+        if data[middle] == elem:
+            return middle
+        elif data[middle] > elem:
+            high = middle - 1
+        else:
+            low = middle + 1
+
+    return -1
+
+# Requerimiento 1 - Sin busqueda binaria
 
 def get_artists_range(a_inicial,a_final,catalog):
     i=1
@@ -99,7 +153,9 @@ def get_artists_range(a_inicial,a_final,catalog):
        
     return artists_in_range
 
-def artworks_found(date_initial,date_final,catalog):
+# Requerimento 2 
+
+def artworks_found(date_initial,date_final,catalog): #Funcion principal
     i=1
     count=0
     centinela=True
@@ -114,79 +170,210 @@ def artworks_found(date_initial,date_final,catalog):
         elif (artworks_a['DateAcquired']>date_final):
             centinela=False
         i+=1
-    return data_artworks,count
+    return (data_artworks,count)
+
+def splitAuthorsIDsReq2(authorsIDs):  #Tratar los datos
+    authors = authorsIDs.replace("[","")
+    authors=authors.replace("]","")
+    authors=authors.replace(",","")
+    list_constituentID=authors.split()
+    return list_constituentID
+
 def artists_found(catalog):
-    i=1
+    iteraciones_p=1
     artworks_clasificados=catalog["artwork_2"]
     artists=catalog["artists"]
-    Artworks_final=lt.newList()
-    largo=lt.size(artworks_clasificados)
+    Artworks_final=lt.newList("ARRAY_LIST")
+    largo_art_clasificados=lt.size(artworks_clasificados)
     
-    while i<largo:
-        artwork=lt.getElement(artworks_clasificados,i)
+    while iteraciones_p<=largo_art_clasificados:
+        artwork=lt.getElement(artworks_clasificados,iteraciones_p)
         constituentID=artwork["ConstituentID"]
-        new_constituentID=constituentID.replace("[","")
-        new_constituentID1=new_constituentID.replace("]","")
-        new_constituentID2=new_constituentID1.replace(",","")
-        list_constituentID=new_constituentID2.split()
+        list_constituentID=splitAuthorsIDsReq2(constituentID)
         size_artwork=len(list_constituentID)
-        centinela=True
-        j=1
-        data_necessary={}
+        data_necessary=lt.newList("ARRAY_LIST")
         if size_artwork==1:
-            while j<lt.size(artists) and centinela==True:
-                artist=lt.getElement(artists,j)
-                constituentID_2=artist["ConstituentID"]
+            pos1=binary_search(artists,list_constituentID[0],DateidLowerThanGivenDate,DateidGreaterThanGivenDate)
+            artista=lt.getElement(artists,pos1)
+            if int(list_constituentID[0])==int(artista["ConstituentID"]):
                 
-                if int(list_constituentID[0])==int(constituentID_2):
-                    print(1)
-                    data_necessary={"Titulo":artwork["Title"],
-                                    "Artista":artist["Name"],
-                                    "Fecha":artwork["Date"],
-                                    "Medio":artwork["Medium"],
-                                    "Dimensiones":artwork["Dimensions"]   
-                                         }
-                    lt.addLast(Artworks_final,data_necessary)
-                    centinela=False
-              
-                j+=1 
+                lt.addLast(data_necessary, artwork["Title"])      #pos 1: Título de la obra
+                lt.addLast(data_necessary, artista["Name"])       #pos 2: Nombres de los autores
+                lt.addLast(data_necessary, artwork["Date"])       #pos 3: Fecha de la obra
+                lt.addLast(data_necessary, artwork["Medium"])     #pos 4: Técnica de la obra
+                lt.addLast(data_necessary, artwork["Dimensions"]) #pos 5: Dimensiones de la obra    
+
+                lt.addLast(Artworks_final,data_necessary)   
         elif size_artwork>1:
             authors=[]
             
-            for no_artist in list_constituentID:
-                centinela=True
-                while j<lt.size(artists) and centinela==True:
-                    artist=lt.getElement(artists,j)
-                    constituentID_2=artist["ConstituentID"]
-                    if int(no_artist)==int(constituentID_2):
-                        author=artist["Name"]
-                        authors.append(author)
-                        centinela=False
-                j+=1  
-            data_necessary={"Titulo":artwork["Title"],
-                            "Artista":authors,
-                            "Fecha":artwork["Date"],
-                            "Medio":artwork["Medium"],
-                            "Dimensiones":artwork["Dimensions"]
-            } 
-            lt.addLast(Artworks_final,data_necessary)   
+            for artist_at_the_moment in list_constituentID:
+                pos=binary_search(artists,artist_at_the_moment,DateidLowerThanGivenDate,DateidGreaterThanGivenDate)
+                artista=lt.getElement(artists,pos)
+                if int(artist_at_the_moment)==int(artista["ConstituentID"]):
+                    authors.append(artista["Name"])
+            lt.addLast(data_necessary, artwork["Title"])      #pos 1: Título de la obra
+            lt.addLast(data_necessary, authors)       #pos 2: Nombres de los autores
+            lt.addLast(data_necessary, artwork["Date"])       #pos 3: Fecha de la obra
+            lt.addLast(data_necessary, artwork["Medium"])     #pos 4: Técnica de la obra
+            lt.addLast(data_necessary, artwork["Dimensions"]) #pos 5: Dimensiones de la obra    
 
-        i+=1
+            lt.addLast(Artworks_final,data_necessary)  
+
+        iteraciones_p+=1
     return Artworks_final
+
+#Requerimiento 3
+def eliminar_repetidos(lista_count):
+    largo_no_tec=lt.size(lista_count)
+    i=1
+    while i<largo_no_tec:
+        valor_i=lt.getElement(lista_count,i)
+        j=1+i
+
+        while j<=largo_no_tec:
+            valor_j=lt.getElement(lista_count,j)
+            valor_ai=lt.getElement(valor_i,2)
+            valor_ji=lt.getElement(valor_j,2)
+            if valor_ai==valor_ji:
+                lt.deleteElement(lista_count,j)
+                largo_no_tec-=1
+                j-=1
+                
+            j+=1
+        i+=1
+        
+    return lista_count
+
+def tecnicas_artisticas(nombre,catalog):
+    no_iteraciones_id=1
+    no_iteraciones_art=1
+    centinela=True
+    artists=catalog["artists"]
+    artworks=catalog["artworks"]
+    data_tecnicas=catalog["tecnicas"]
+    large_artists=lt.size(artists)
+    large_artworks=lt.size(artworks)
+    #Encontremos el constituent ID
+    while no_iteraciones_id<=large_artists and centinela==True:
+        artist=lt.getElement(artists,no_iteraciones_id)
+        if nombre==artist["Name"]:
+            Id=artist["ConstituentID"]
+            centinela=False
+        no_iteraciones_id+=1
+    #Comparamos el constituent ID para encontrar las obras
+    while no_iteraciones_art<=large_artworks:
+        data_at_moment=lt.newList("ARRAY_LIST")
+        artwork=lt.getElement(artworks,no_iteraciones_art)
+        id_in_artw=artwork["ConstituentID"]
+        list_id_in_artw=splitAuthorsIDsReq2(id_in_artw)
+        len_list_id=len(list_id_in_artw)
+        if len_list_id==1:
+            if int(list_id_in_artw[0])==int(Id):
+                lt.addLast(data_at_moment, artwork["Title"])      #pos 1: Título de la obra
+                lt.addLast(data_at_moment, artwork["Date"])       #pos 3: Fecha de la obra
+                lt.addLast(data_at_moment, artwork["Medium"])     #pos 4: Técnica de la obra
+                lt.addLast(data_at_moment, artwork["Dimensions"])  #pos 5: Dimensiones de la obra    
+
+                lt.addLast(data_tecnicas,data_at_moment)
+        elif len_list_id>1:
+            for each_id in list_id_in_artw:
+                if int(each_id)==int(Id):
+                   lt.addLast(data_at_moment, artwork["Title"])      #pos 1: Título de la obra
+                   lt.addLast(data_at_moment, artwork["Date"])       #pos 3: Fecha de la obra
+                   lt.addLast(data_at_moment, artwork["Medium"])     #pos 4: Técnica de la obra
+                   lt.addLast(data_at_moment, artwork["Dimensions"])  #pos 5: Dimensiones de la obra    
+
+                   lt.addLast(data_tecnicas,data_at_moment)
+        no_iteraciones_art+=1
+    return data_tecnicas
+
+def operaciones_req3(catalog):
+    datos_tecnicas_art=catalog["tecnicas"]    
+    iteraciones_data_art=1
+    lista_count_tec=lt.newList("ARRAY_LIST")
+    large_data_art=lt.size(datos_tecnicas_art)
+    while iteraciones_data_art<=large_data_art:
+        count=1
+        lista_count_tec1=lt.newList("ARRAY_LIST")
+        tecnica_m=lt.getElement(datos_tecnicas_art,iteraciones_data_art)
+        iteraciones_dm=iteraciones_data_art+1
+        while iteraciones_dm<=large_data_art:
+            
+            tecnica_m1=lt.getElement(datos_tecnicas_art,iteraciones_dm)
+            tecnica_c=lt.getElement(tecnica_m1,3)
+            tecnica_p=lt.getElement(tecnica_m,3)
+            if tecnica_p==tecnica_c:
+                count+=1
+            iteraciones_dm+=1  
+           
+        lt.addLast(lista_count_tec1, count)        
+        lt.addLast(lista_count_tec1, lt.getElement(tecnica_m,3))       ## Date  ## Dimensions
+        
+        lt.addLast(lista_count_tec,lista_count_tec1) 
+        iteraciones_data_art+=1
+    lista_sin_repetidos=eliminar_repetidos(lista_count_tec)
+    #ordenar de mayor a menor
+    lista_ordenada=sa.sort(lista_sin_repetidos,compare_cantidad)
+    tecnica_usa_ve=lt.getElement(lista_ordenada,1)
+    tecnica_mas_usada=lt.getElement(tecnica_usa_ve,2)
+  
+    return (lista_ordenada,tecnica_mas_usada)
+
+#Encontrar las obras de la tecnica que mas usa el artista
+def encontrar_obras_con_tec(catalog,tecnica_mas_usada):
+    i=1
+    data_tecnicas=catalog["tecnicas"]
+    large_data_tecnicas=lt.size(data_tecnicas)
+    lista_pf=lt.newList("ARRAY_LIST")
+    while i<=large_data_tecnicas:
+        lista_s=lt.newList("ARRAY_LIST")
+        artwork_at=lt.getElement(data_tecnicas,i)
+        artwork_at_moment=lt.getElement(artwork_at,3)
+        if tecnica_mas_usada==artwork_at_moment:
+            lt.addLast(lista_s, lt.getElement(artwork_at,1))      #pos 1: Título de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,2))       #pos 3: Fecha de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,3))      #pos 4: Técnica de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,4))  #pos 5: Dimensiones de la obra  
+            lt.addLast(lista_pf,lista_s)
+        i+=1
+    return lista_pf
+
     
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
-def compare_artists(artist1,artist2):
-    return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
 
+#def compare_artists(artist1,artist2):
+    if float (artist1["BeginDate"]) != float(artist2["BeginDate"]):
+       return (float (artist1["BeginDate"]) < float(artist2["BeginDate"]))
+    elif float (artist1['ConstituentID']) != float(artist2['ConstituentID']):
+        return float(artist1['ConstituentID']) < float(artist2['ConstituentID'])
+
+def compare_artists(artist1,artist2):
+    return float(artist1['ConstituentID']) < float(artist2['ConstituentID'])
+
+# Para el requerimiento 2
 def compare_artworks(artwork1,artwork2):
     return  (artwork1["DateAcquired"]) < (artwork2["DateAcquired"])
 
+def DateidLowerThanGivenDate(artists,id):         #Requerimiento 2
+    return int(artists["ConstituentID"]) < int(id)
+
+def DateidGreaterThanGivenDate(artists,id):       #Requerimiento 2
+    return int(artists["ConstituentID"]) > int(id)
+
+#Para el requerimiento 3
+def compare_cantidad(cantidad1,cantidad2):
+    return float(lt.getElement(cantidad1,1)) > float(lt.getElement(cantidad2,1))
+
+
 # Funciones de ordenamiento
+# Para el requerimiento 1
 def sortArtists(catalog):
     sa.sort(catalog['artists'],compare_artists)
 
+# Para el requerrimiento 2
 def sortArtworks(catalog):
     sa.sort(catalog['artworks'],compare_artworks)
     
