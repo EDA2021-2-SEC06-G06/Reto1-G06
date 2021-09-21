@@ -41,7 +41,7 @@ def initCatalog(list_type):
 
 # Funciones para la carga de datos
 
-def loadData(catalog, file_size, sort_artworks, sort_type):
+def loadData(catalog, file_size, sort_data, sort_type):
     """
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
@@ -49,7 +49,7 @@ def loadData(catalog, file_size, sort_artworks, sort_type):
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
 
-    if sort_artworks == 1:
+    if sort_data == 1:
         sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
         sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 

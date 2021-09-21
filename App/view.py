@@ -26,7 +26,10 @@ import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import queue
 from DISClib.ADT import stack
+from datetime import datetime
 from time import process_time
+import textwrap
+from tabulate import tabulate
 assert cf
 
 
@@ -38,7 +41,7 @@ operación solicitada
 """
 
 def printMenu():
-    print("\n-----------------------------------------")
+    print("\n\n-----------------------------------------")
     print("Bienvenido al menú de opciones")
     print("-----------------------------------------")
     print("Opciones preliminares")
@@ -98,24 +101,110 @@ def printLast(lst, num):
         print(lt.getElement(lst, pos))
 
 
-def printReq4(req4_list):
-    print ("{:<8} {:<25}".format("Nationality", "ArtWorks"))
+def adjustlenght(text, step):
+    lenght = len(text)
 
-    pos = 1
-    while pos <= 10:
+    for n in range(step, 20*step + 1, step):
+        if lenght > n:
+            text = text[:n] + "\n" + text[n:]
+    
+    return text
+
+
+def printReq1Table(lst):
+    headers = ["ConstituentID", "Name", "BeginDate", "EndDate", "Nationality", "Gender"]
+    table = []
+
+    for pos in range(1,4):
+        artist = lt.getElement(lst, pos)
+        c1 = artist["ArtistID"]
+        c2 = artist["Name"]
+        c3 = artist["BeginDate"]
+        c4 = artist["EndDate"]
+        if c4 == "0":
+            c4 = "--"
+        c5 = artist["Nationality"]
+        if c5 == "":
+            c5 = "--"
+        c6 = artist["Gender"]
+        if c6 == "":
+            c6 = "--"
+
+        table.append([c1,c2,c3,c4,c5,c6])
+     
+
+    for x in range(2, -1,-1):
+        pos = lt.size(lst) - x
+        artist = lt.getElement(lst, pos)
+        c1 = artist["ArtistID"]
+        c2 = artist["Name"]
+        c3 = artist["BeginDate"]
+        c4 = artist["EndDate"]
+        if c4 == "0":
+            c4 = "--"
+        c5 = artist["Nationality"]
+        if c5 == "":
+            c5 = "--"
+        c6 = artist["Gender"]
+        if c6 == "":
+            c6 = "--"
+
+        table.append([c1,c2,c3,c4,c5,c6])
+
+    print(tabulate(table, headers, tablefmt="grid"))
+
+
+def printReq2Table(lst):
+    headers = ['ObjectID','Title','ArtistsNames',"Medium","Dimensions","Date","DateAcquired"]
+    table = []
+
+    for pos in range(1,4):
+        lista = lt.getElement(lst, pos)
+        c1 = lt.getElement(lista, 1)
+        c2 = adjustlenght(lt.getElement(lista, 2), 15)
+        c3 = adjustlenght(lt.getElement(lista, 3), 30)
+        c4 = adjustlenght(lt.getElement(lista, 4), 20)
+        c5 = adjustlenght(lt.getElement(lista, 5), 20)
+        c6 = lt.getElement(lista, 6)
+        c7 = lt.getElement(lista, 7)[0:10]
+
+        table.append([c1,c2,c3,c4,c5,c6,c7])
+     
+
+    for x in range(2, -1,-1):
+        pos = lt.size(lst) - x
+        lista = lt.getElement(lst, pos)
+        c1 = lt.getElement(lista, 1)
+        c2 = adjustlenght(lt.getElement(lista, 2), 15)
+        c3 = adjustlenght(lt.getElement(lista, 3), 30)
+        c4 = adjustlenght(lt.getElement(lista, 4), 20)
+        c5 = adjustlenght(lt.getElement(lista, 5), 20)
+        c6 = lt.getElement(lista, 6)
+        c7 = lt.getElement(lista, 7)[0:10]
+
+        table.append([c1,c2,c3,c4,c5,c6,c7])
+
+    print(tabulate(table, headers, tablefmt="grid"))
+
+
+def printReq4Table1(req4_list):
+    headers = ["Nationality", "ArtWorks"]
+    table = []
+
+    for pos in range(1,11):
         country_stack = lt.getElement(req4_list, pos)
         num = stack.pop(country_stack)
         country = stack.pop(country_stack)
-        print ("{:<8} {:<25}".format(country, num))
+        table.append([country, num])
 
-        pos += 1
+    print(tabulate(table, headers, tablefmt="grid"))
 
 
 catalog = None
 file_size = "small"
 list_type = "ARRAY_LIST"
 sort_type = 3
-sort_artworks = 2
+sort_data = 1
 
 """
 Menu principal
@@ -149,7 +238,7 @@ while True:
         #Cargar archivos
         print("Cargando información de los archivos ....")
         catalog = initCatalog(list_type)
-        loadData(catalog, file_size, sort_artworks, sort_type)
+        loadData(catalog, file_size, sort_data, sort_type)
         print('Artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Obras cargadas: ' + str(lt.size(catalog['artworks'])))
         print("\nÚltimos 3 artistas:")
@@ -184,14 +273,38 @@ while True:
     elif int(inputs) == 10:
         a_inicial = int(input("Ingrese el año inicial: "))
         a_final = int(input("Ingrese el año final: "))
+
+        start_time = process_time()
         req1, count = controller.REQ1getArtistsRange(catalog, a_inicial, a_final)
-        print("\n Se encontraron " + str(count) + " artistas nacidos en el rango dado")
-        printFirst(req1, 3)
-        printLast(req1, 3)
+        stop_time = process_time()
+        running_time = (stop_time - start_time)
+
+        print("\n\n=============== Requerimiento Número 1 ===============")
+        print("Tiempo de ejecución: " + str(running_time) + " segundos")
+        
+        print("\nSe encontraron " + str(count) + " artistas nacidos en el rango dado")
+        print("\nLos primeros y últimos 3 fueron:")
+        printReq1Table(req1)
 
 
     elif int(inputs) == 20:
-        pass
+        date_initial_str = input("Ingrese la fecha de adquisición inicial en formato AAAA-MM-DD: ")
+        date_final_str = input("Ingrese la fecha de adquisición final en formato AAAA-MM-DD: ")
+        date_initial = datetime.strptime(date_initial_str, "%Y-%m-%d")
+        date_final = datetime.strptime(date_final_str, "%Y-%m-%d")
+
+        start_time = process_time()
+        req2,artworks_count,purchase_count = controller.REQ2getArtworksRange(catalog, date_initial, date_final)
+        stop_time = process_time()
+        running_time = (stop_time - start_time)
+
+        print("\n\n=============== Requerimiento Número 2 ===============")
+        print("Tiempo de ejecución: " + str(running_time) + " segundos")
+        
+        print("\nSe encontraron " + str(artworks_count) + " obras adquiridas entre la fecha " + date_initial_str + " y la fecha " + date_final_str + ".")
+        print(str(purchase_count) + " fueron adquiridas por compra" + "\n")
+        print("Las primeras y últimas 3 compras en el rango fueron:")
+        printReq2Table(req2)
 
 
     elif int(inputs) == 30:
@@ -202,12 +315,12 @@ while True:
         start_time = process_time()
         req4_list = controller.REQ4getNationalityCount(catalog)
         stop_time = process_time()
-        running_time = (stop_time - start_time)*1000
+        running_time = (stop_time - start_time)
 
-        print("\nReq 4")
-        print("Tiempo de ejecución: " + str(running_time) + " segundos")
-
-        printReq4(req4_list)
+        print("\n\n=============== Requerimiento Número 4 ===============")
+        print("Tiempo de ejecución: " + str(running_time) + " segundos\n")
+        print("El TOP 10 de nacionalidades con más obras es:")
+        printReq4Table1(req4_list)
 
 
     elif int(inputs) == 50:
