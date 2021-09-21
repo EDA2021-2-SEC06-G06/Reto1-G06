@@ -48,10 +48,12 @@ def loadData(catalog, file_size, sort_data, sort_type):
     """
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
+    sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
+    sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 
-    if sort_data == 1:
-        sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
-        sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
+    #if sort_data == 1:
+    #    sortArtists(catalog, sort_type)
+    #    sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 
 
 def loadArtists(catalog, file_size):
@@ -68,6 +70,7 @@ def loadArtworks(catalog, file_size):
     """
     Carga las obras del archivo.
     """
+    sortArtists(catalog, 3, model.cmpArtistByAuthorID)
     artworksfile = cf.data_dir + 'Artworks-utf8-' + file_size + '.csv'
     input_file = csv.DictReader(open(artworksfile, encoding='utf-8'))
     for artwork in input_file:
@@ -76,7 +79,7 @@ def loadArtworks(catalog, file_size):
 
 # Funciones de ordenamiento
 
-def sortArtists(catalog, sort_type, cmpfunction):
+def sortArtists(catalog, sort_type, cmpfunction=model.cmpArtistByBeginDate):
     """
     Ordena los artistas por fecha de nacimiento
     """
