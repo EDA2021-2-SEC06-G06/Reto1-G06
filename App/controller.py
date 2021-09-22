@@ -48,12 +48,10 @@ def loadData(catalog, file_size, sort_data, sort_type):
     """
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
-    sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
-    sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 
-    #if sort_data == 1:
-    #    sortArtists(catalog, sort_type)
-    #    sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
+    if sort_data == 1:
+        sortArtists(catalog, sort_type, model.cmpArtistByBeginDate)
+        sortArtworks(catalog, sort_type, model.cmpArtworkByDateAcquired)
 
 
 def loadArtists(catalog, file_size):
@@ -100,7 +98,7 @@ def REQ1getArtistsRange(catalog, date_initial, date_final):
 
 
 def REQ2getArtworksRange(catalog, date_initial, date_final):
-    return model.getArtworksInfoReq2(catalog, date_initial, date_final)
+    return model.getArtworksInfoReq21(catalog, date_initial, date_final)
 
 
 def REQ4getNationalityCount(catalog):
