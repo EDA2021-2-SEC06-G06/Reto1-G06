@@ -328,7 +328,215 @@ def getArtworksInfoReq2(catalog, date_initial, date_final):
         queue.dequeue(data_artworks)
 
     return Artworks_final,artworks_count,purchase_count
+"Requerimiento 3"
+def eliminar_repetidos(lista_count):
+    largo_no_tec=lt.size(lista_count)
+    i=1
+    while i<largo_no_tec:
+        valor_i=lt.getElement(lista_count,i)
+        j=1+i
 
+        while j<=largo_no_tec:
+            valor_j=lt.getElement(lista_count,j)
+            valor_ai=lt.getElement(valor_i,2)
+            valor_ji=lt.getElement(valor_j,2)
+            if valor_ai==valor_ji:
+                lt.deleteElement(lista_count,j)
+                largo_no_tec-=1
+                j-=1
+                
+            j+=1
+        i+=1
+def getTechniquesReq3(catalog,Name):
+    ArtistAndTechniques=lt.newList("ARRAY_LIST") #ARRAY_LIST para acceder a cada posición con tiempo constante
+    Artworks_WID=catalog["artworks"]
+    large_Artworks_WID=lt.size(Artworks_WID)
+    IteracionesI=1
+    while IteracionesI<large_Artworks_WID:
+        data_necessary=lt.newList("ARRAY_LIST") 
+        ArtworkAtMoment=lt.getElement(Artworks_WID,IteracionesI)
+        NameArtist=ArtworkAtMoment["ArtistName"]
+        if NameArtist==Name:
+            lt.addLast(data_necessary, ArtworkAtMoment["Title"])          #pos 1: Titulo de la obra
+            lt.addLast(data_necessary, ArtworkAtMoment["Date"])           #pos 2: Fecha de la obra
+            lt.addLast(data_necessary, ArtworkAtMoment["Medium"])         #pos 3: Medio de la obra
+            lt.addLast(data_necessary, ArtworkAtMoment["Dimensions"])     #pos 4: Dimensiones de la obra
+            lt.addLast(ArtistAndTechniques,data_necessary)
+        IteracionesI+=1
+    NumberOfArtworks=lt.size(ArtistAndTechniques)
+    OrderMediums,TechniqueMoreUsed=operaciones_req3(ArtistAndTechniques)
+    NumberOfTechniques=lt.size(OrderMediums)
+    ListOfArtists=encontrar_obras_con_tec(ArtistAndTechniques,TechniqueMoreUsed)
+    return NumberOfArtworks,TechniqueMoreUsed,NumberOfTechniques,ListOfArtists
+
+def operaciones_req3(ArtistAndTechniques):
+    datos_tecnicas_art=ArtistAndTechniques
+    iteraciones_data_art=1
+    lista_count_tec=lt.newList("ARRAY_LIST")
+    large_data_art=lt.size(datos_tecnicas_art)
+    while iteraciones_data_art<=large_data_art:
+        count=1
+        lista_count_tec1=lt.newList("ARRAY_LIST")
+        tecnica_m=lt.getElement(datos_tecnicas_art,iteraciones_data_art)
+        iteraciones_dm=iteraciones_data_art+1
+        while iteraciones_dm<=large_data_art:
+            
+            tecnica_m1=lt.getElement(datos_tecnicas_art,iteraciones_dm)
+            tecnica_c=lt.getElement(tecnica_m1,3)
+            tecnica_p=lt.getElement(tecnica_m,3)
+            if tecnica_p==tecnica_c:
+                count+=1
+            iteraciones_dm+=1  
+           
+        lt.addLast(lista_count_tec1, count)        
+        lt.addLast(lista_count_tec1, lt.getElement(tecnica_m,3))       ## Date  ## Dimensions
+        
+        lt.addLast(lista_count_tec,lista_count_tec1) 
+        iteraciones_data_art+=1
+    lista_sin_repetidos=eliminar_repetidos(lista_count_tec)
+    #ordenar de mayor a menor
+    lista_ordenada=sso.sort(lista_count_tec,compare_cantidad)
+    tecnica_usa_ve=lt.getElement(lista_ordenada,1)
+    tecnica_mas_usada=lt.getElement(tecnica_usa_ve,2)
+  
+    return lista_ordenada,tecnica_mas_usada
+
+"Encontrar las obras de la tecnica que mas usa el artista"
+def encontrar_obras_con_tec(ArtistAndTechniques,tecnica_mas_usada):
+    i=1
+    data_tecnicas=ArtistAndTechniques
+    large_data_tecnicas=lt.size(data_tecnicas)
+    lista_pf=lt.newList("ARRAY_LIST")
+    while i<=large_data_tecnicas:
+        lista_s=lt.newList("ARRAY_LIST")
+        artwork_at=lt.getElement(data_tecnicas,i)
+        artwork_at_moment=lt.getElement(artwork_at,3)
+        if tecnica_mas_usada==artwork_at_moment:
+            lt.addLast(lista_s, lt.getElement(artwork_at,1))      #pos 1: Título de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,2))       #pos 3: Fecha de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,3))      #pos 4: Técnica de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,4))  #pos 5: Dimensiones de la obra  
+            lt.addLast(lista_pf,lista_s)
+        i+=1
+    return lista_pf
+
+
+"""""
+def eliminar_repetidos(lista_count):
+    largo_no_tec=lt.size(lista_count)
+    i=1
+    while i<largo_no_tec:
+        valor_i=lt.getElement(lista_count,i)
+        j=1+i
+
+        while j<=largo_no_tec:
+            valor_j=lt.getElement(lista_count,j)
+            valor_ai=lt.getElement(valor_i,2)
+            valor_ji=lt.getElement(valor_j,2)
+            if valor_ai==valor_ji:
+                lt.deleteElement(lista_count,j)
+                largo_no_tec-=1
+                j-=1
+                
+            j+=1
+        i+=1
+        
+    return lista_count
+
+def tecnicas_artisticas(nombre,catalog):
+    no_iteraciones_id=1
+    no_iteraciones_art=1
+    centinela=True
+    artists=catalog["artists"]
+    artworks=catalog["artworks"]
+    data_tecnicas=catalog["tecnicas"]
+    large_artists=lt.size(artists)
+    large_artworks=lt.size(artworks)
+    #Encontremos el constituent ID
+    while no_iteraciones_id<=large_artists and centinela==True:
+        artist=lt.getElement(artists,no_iteraciones_id)
+        if nombre==artist["Name"]:
+            Id=artist["ConstituentID"]
+            centinela=False
+        no_iteraciones_id+=1
+    #Comparamos el constituent ID para encontrar las obras
+    while no_iteraciones_art<=large_artworks:
+        data_at_moment=lt.newList("ARRAY_LIST")
+        artwork=lt.getElement(artworks,no_iteraciones_art)
+        id_in_artw=artwork["ConstituentID"]
+        list_id_in_artw=splitAuthorsIDsReq2(id_in_artw)
+        len_list_id=len(list_id_in_artw)
+        if len_list_id==1:
+            if int(list_id_in_artw[0])==int(Id):
+                lt.addLast(data_at_moment, artwork["Title"])      #pos 1: Título de la obra
+                lt.addLast(data_at_moment, artwork["Date"])       #pos 3: Fecha de la obra
+                lt.addLast(data_at_moment, artwork["Medium"])     #pos 4: Técnica de la obra
+                lt.addLast(data_at_moment, artwork["Dimensions"])  #pos 5: Dimensiones de la obra    
+
+                lt.addLast(data_tecnicas,data_at_moment)
+        elif len_list_id>1:
+            for each_id in list_id_in_artw:
+                if int(each_id)==int(Id):
+                   lt.addLast(data_at_moment, artwork["Title"])      #pos 1: Título de la obra
+                   lt.addLast(data_at_moment, artwork["Date"])       #pos 3: Fecha de la obra
+                   lt.addLast(data_at_moment, artwork["Medium"])     #pos 4: Técnica de la obra
+                   lt.addLast(data_at_moment, artwork["Dimensions"])  #pos 5: Dimensiones de la obra    
+
+                   lt.addLast(data_tecnicas,data_at_moment)
+        no_iteraciones_art+=1
+    return data_tecnicas
+
+def operaciones_req3(catalog):
+    datos_tecnicas_art=catalog["tecnicas"]    
+    iteraciones_data_art=1
+    lista_count_tec=lt.newList("ARRAY_LIST")
+    large_data_art=lt.size(datos_tecnicas_art)
+    while iteraciones_data_art<=large_data_art:
+        count=1
+        lista_count_tec1=lt.newList("ARRAY_LIST")
+        tecnica_m=lt.getElement(datos_tecnicas_art,iteraciones_data_art)
+        iteraciones_dm=iteraciones_data_art+1
+        while iteraciones_dm<=large_data_art:
+            
+            tecnica_m1=lt.getElement(datos_tecnicas_art,iteraciones_dm)
+            tecnica_c=lt.getElement(tecnica_m1,3)
+            tecnica_p=lt.getElement(tecnica_m,3)
+            if tecnica_p==tecnica_c:
+                count+=1
+            iteraciones_dm+=1  
+           
+        lt.addLast(lista_count_tec1, count)        
+        lt.addLast(lista_count_tec1, lt.getElement(tecnica_m,3))       ## Date  ## Dimensions
+        
+        lt.addLast(lista_count_tec,lista_count_tec1) 
+        iteraciones_data_art+=1
+    lista_sin_repetidos=eliminar_repetidos(lista_count_tec)
+    #ordenar de mayor a menor
+    lista_ordenada=sa.sort(lista_sin_repetidos,compare_cantidad)
+    tecnica_usa_ve=lt.getElement(lista_ordenada,1)
+    tecnica_mas_usada=lt.getElement(tecnica_usa_ve,2)
+  
+    return (lista_ordenada,tecnica_mas_usada)
+
+#Encontrar las obras de la tecnica que mas usa el artista
+def encontrar_obras_con_tec(catalog,tecnica_mas_usada):
+    i=1
+    data_tecnicas=catalog["tecnicas"]
+    large_data_tecnicas=lt.size(data_tecnicas)
+    lista_pf=lt.newList("ARRAY_LIST")
+    while i<=large_data_tecnicas:
+        lista_s=lt.newList("ARRAY_LIST")
+        artwork_at=lt.getElement(data_tecnicas,i)
+        artwork_at_moment=lt.getElement(artwork_at,3)
+        if tecnica_mas_usada==artwork_at_moment:
+            lt.addLast(lista_s, lt.getElement(artwork_at,1))      #pos 1: Título de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,2))       #pos 3: Fecha de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,3))      #pos 4: Técnica de la obra
+            lt.addLast(lista_s, lt.getElement(artwork_at,4))  #pos 5: Dimensiones de la obra  
+            lt.addLast(lista_pf,lista_s)
+        i+=1
+    return lista_pf
+"""
 
 "Requerimiento 4"
 def nationalityListReq4(catalog):
@@ -565,6 +773,9 @@ def AuthorIDLowerThanGivenID(artist, id):                 #Requerimiento 2
 
 def AuthorIDGreaterThanGivenID(artist, id):               #Requerimiento 2
     return artist["ArtistID"] > id
+
+def compare_cantidad(cantidad1,cantidad2):                #Requerimiento 3
+    return float(lt.getElement(cantidad1,1)) > float(lt.getElement(cantidad2,1))
 
 
 def cmpByNumAuthors(nationality1, nationality2):          #Requerimiento 4

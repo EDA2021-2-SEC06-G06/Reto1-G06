@@ -102,6 +102,9 @@ def REQ1getArtistsRange(catalog, date_initial, date_final):
 def REQ2getArtworksRange(catalog, date_initial, date_final):
     return model.getArtworksInfoReq2(catalog, date_initial, date_final)
 
+def REQ3get_techniquees(catalog,Name):
+    return model.getTechniquesReq3(catalog,Name)
+
 
 def REQ4getNationalityCount(catalog):
     final_list = model.getNationalityCountReq4(catalog)
