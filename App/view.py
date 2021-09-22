@@ -255,6 +255,8 @@ while True:
 
 
     if int(inputs) == 1:
+        #file_size = input("Ingrese el sufijo del archivo que desea utilizar (small, large, 10pct...): ")
+        #sort_data = int(input("Si desea ordenar los datos al cargarlos, digite 1. De lo contrario, digite cualquier número: "))
         file_size = "large"
         sort_data = 1
         sort_type = 3
@@ -301,8 +303,12 @@ while True:
 
 
     elif int(inputs) == 10:
-        a_inicial = int(input("Ingrese el año inicial: "))
-        a_final = int(input("Ingrese el año final: "))
+        #a_inicial = int(input("Ingrese el año inicial: "))
+        #a_final = int(input("Ingrese el año final: "))
+
+        #Para pruebas de rendimiento
+        a_inicial = 0
+        a_final = 2022
 
         start_time = process_time()
         req1, count = controller.REQ1getArtistsRange(catalog, a_inicial, a_final)
@@ -320,8 +326,10 @@ while True:
     elif int(inputs) == 20:
         #date_initial = input("Ingrese la fecha de adquisición inicial en formato AAAA-MM-DD: ")
         #date_final = input("Ingrese la fecha de adquisición final en formato AAAA-MM-DD: ")
-        date_initial = "1944-06-06"
-        date_final = "1989-11-09"
+
+        #Para pruebas de rendimiento
+        date_initial = "1900-01-01"
+        date_final = "2022-12-31"
 
         start_time = process_time()
         req2,artworks_count,purchase_count = controller.REQ2getArtworksRange(catalog, date_initial, date_final)
@@ -333,7 +341,7 @@ while True:
     
         print("\nSe encontraron " + str(artworks_count) + " obras adquiridas entre la fecha " + date_initial + " y la fecha " + date_final + ".")
         print(str(purchase_count) + " fueron adquiridas por compra" + "\n")
-        print("Las primeras y últimas 3 compras en el rango fueron:          (se recomienda ampliar la vista de la Terminal para observar mejor la tabla)")
+        print("Las primeras y últimas 3 compras en el rango fueron:       (se recomienda ampliar la vista de la Terminal para observar mejor la tabla)")
         printReq2Table(req2)
         
 
@@ -345,10 +353,10 @@ while True:
         start_time = process_time()
         req4_list = controller.REQ4getNationalityCount(catalog)
         stop_time = process_time()
-        running_time = (stop_time - start_time)*1000
+        running_time = (stop_time - start_time)
 
         print("\n\n=============== Requerimiento Número 4 ===============")
-        print("Tiempo de ejecución: " + str(running_time) + " milisegundos\n")
+        print("Tiempo de ejecución: " + str(running_time) + " segundos\n")
         print("El TOP 10 de nacionalidades con más obras es:")
         printReq4Table(req4_list)
 
