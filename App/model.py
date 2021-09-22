@@ -516,10 +516,12 @@ def calculateSingularCostReq5(depth, height, lenght, width, diameter, weight):
 
     return round(max,5)
 
-
-#TAREA PENDIENTE: ¿Cómo se implementaría si la lista de artistas estuviera organizada según Constituent ID?
-#Esto reduciría la complejidad temporal del algoritmo (sin tener en cuenta el ordenamiento)
-#def getAuthorsReq2IfArtistsSortedByID(catalog, artworks):
+#1- Ordenar por departamentos
+#2- Búsqueda binaria para buscar obras del departamento (getInitPos)
+#3- Sacar lista de obras (peso, costo...) -- lista1
+#4- Ordenar lista1 por Date (extraer más antiguos en una lista2)
+#5- Ordenar lista1 por costo (extraer más costosas en una lista3)
+#A retornar: lista2, lista3, conteo de obras (size(lista1)), peso total, costo total
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
