@@ -87,7 +87,13 @@ def addArtwork(catalog, artwork):
                             artwork["Department"],
                             artwork["DateAcquired"],
                             artwork['CreditLine'],
-                            artwork["URL"])
+                            artwork["URL"],
+                            artwork["Depth (cm)"],
+                            artwork["Diameter (cm)"],
+                            artwork["Height (cm)"],
+                            artwork["Length (cm)"],
+                            artwork["Weight (kg)"],
+                            artwork["Width (cm)"])
 
     addArtistsNames(catalog, Artw_r)
 
@@ -154,7 +160,8 @@ def artists_required(artistID,name,begindate,end,nationality,gender):
 
 
 def artworks_required(artworkID,title,artistID,date,medium,dimensions,
-                    classification,department,dateacquired,creditline, url):
+                    classification,department,dateacquired,creditline, url,
+                    depth, diameter, height, length, weight, width):
     artwork={"ArtworkID":artworkID,
             "Title": title,
             "ArtistID":artistID,
@@ -166,7 +173,14 @@ def artworks_required(artworkID,title,artistID,date,medium,dimensions,
             "Department": department,
             "DateAcquired": dateacquired,
             "CreditLine": creditline,
-            "URL": url}
+            "URL": url,
+            "Depth": depth,
+            "Diameter": diameter,
+            "Height": height,
+            "Length": length,
+            "Weight": weight,
+            "Width": width}
+
     return artwork
 
 
@@ -306,10 +320,11 @@ def getArtworksInfoReq21(catalog, date_initial, date_final):
         pos+=1
 
     return Artworks_final,artworks_count,purchase_count
-"Requerimiento 3"
-"Esta funcion se encarga de eliminar los elementos repetidos despues de  clasificar el mayor"
 
+
+"Requerimiento 3"
 def eliminar_repetidos(lista_count):
+    "Esta funcion se encarga de eliminar los elementos repetidos despues de  clasificar el mayor"
     largo_no_tec=lt.size(lista_count)
     i=1
     while i<largo_no_tec:
@@ -327,8 +342,10 @@ def eliminar_repetidos(lista_count):
                 
             j+=1
         i+=1
-"Funcion pincipal"
+
+
 def getTechniquesReq3(catalog,Name):
+    "Funcion pincipal"
     ArtistAndTechniques=lt.newList("ARRAY_LIST") #ARRAY_LIST para acceder a cada posición con tiempo constante
     Artworks_WID=catalog["artworks"]
     large_Artworks_WID=lt.size(Artworks_WID)
@@ -349,6 +366,7 @@ def getTechniquesReq3(catalog,Name):
     NumberOfTechniques=lt.size(OrderMediums)
     ListOfArtists=encontrar_obras_con_tec(ArtistAndTechniques,TechniqueMoreUsed)
     return NumberOfArtworks,TechniqueMoreUsed,NumberOfTechniques,ListOfArtists
+
 
 def operaciones_req3(ArtistAndTechniques):
     datos_tecnicas_art=ArtistAndTechniques
@@ -382,9 +400,10 @@ def operaciones_req3(ArtistAndTechniques):
   
     return lista_ordenada,tecnica_mas_usada
 
-"Encontrar las obras de la tecnica que mas usa el artista"
-"Exportar finalmente los datos"
+
 def encontrar_obras_con_tec(ArtistAndTechniques,tecnica_mas_usada):
+    "Encontrar las obras de la tecnica que mas usa el artista"
+    "Exportar finalmente los datos"
     i=1
     data_tecnicas=ArtistAndTechniques
     large_data_tecnicas=lt.size(data_tecnicas)
@@ -517,7 +536,7 @@ def getNationalityCountReq4(catalog):
 
 
 "Requerimiento 5"
-def calculateDimensionsReq5(depth, height, lenght, width, diameter):
+def calculateDimensionsReq5(depth, diameter, height, length, width):
     """
     Calcula las dimensiones físicas (área o volumen) de cada obra dependiendo de la información que
     se brinde. Se utilizan unidades de metro
@@ -525,7 +544,7 @@ def calculateDimensionsReq5(depth, height, lenght, width, diameter):
     data = lt.newList("ARRAY_LIST")
     lt.addLast(data, depth)
     lt.addLast(data, height)
-    lt.addLast(data, lenght)
+    lt.addLast(data, length)
     lt.addLast(data, width)
     lt.addLast(data, diameter)
     
@@ -537,10 +556,10 @@ def calculateDimensionsReq5(depth, height, lenght, width, diameter):
     size = lt.size(data)
 
     #Se evalúa cada dimensión para saber cuántas tienen información útil
-    while pos<=size:
+    while pos<=size: #O(1) porque size = 5
         dimension = lt.getElement(data, pos)
         if (dimension != "") and (dimension != "0"):
-            lt.changeInfo(data, pos, float(dimension))
+            lt.changeInfo(data, pos, float(dimension)) #O(1) porque se trata de ARRAY_LIST
             dimensions_count += 1
             no_dimensions = False
         else:
@@ -559,20 +578,20 @@ def calculateDimensionsReq5(depth, height, lenght, width, diameter):
         else:
             depth = lt.getElement(data, 1)
             height = lt.getElement(data, 2)
-            lenght = lt.getElement(data, 3)
+            length = lt.getElement(data, 3)
             width = lt.getElement(data, 4)
-            ans =  depth * height * lenght * width * factor
+            ans =  depth * height * length * width * factor
 
     return ans
 
 
-def calculateSingularCostReq5(depth, height, lenght, width, diameter, weight):
+def calculateSingularCostReq5(depth, diameter, height, length, weight, width):
     """
     Calcula el costo de transportar cierta obra dadas sus dimensiones físicas y su peso.
     Las obras con volumen tienen un costo de transporte muy inferior, puesto que 1cm^2 = 10^-4 m^2,
     mientras que 1cm^3 = 10^-6 m^3
     """
-    dimensions = calculateDimensionsReq5(depth, height, lenght, width, diameter)
+    dimensions = calculateDimensionsReq5(depth, diameter, height, length, width)
 
     if dimensions == -1:
         dcost = 48
@@ -589,13 +608,89 @@ def calculateSingularCostReq5(depth, height, lenght, width, diameter, weight):
 
     return round(max,5)
 
-#1- Ordenar por departamentos
-#2- Búsqueda binaria para buscar obras del departamento (getInitPos)
-#3- Sacar lista de obras (peso, costo...) -- lista1
-#4- Ordenar lista1 por Date (extraer más antiguos en una lista2)
-#5- Ordenar lista1 por costo (extraer más costosas en una lista3)
-#A retornar: lista2, lista3, conteo de obras (size(lista1)), peso total, costo total
 
+def getInitPosReq5(artworks, department):
+    """
+    Realiza a lo sumo max(obras por departamento) ciclos. Consigue la primera posición de la lista
+    en la que aparece una obra del departamento dado
+    """
+    pos1 = binary_search(artworks, department, DeptLowerThanGivenDepartment, DeptGreaterThanGivenDepartment) 
+    index1 = pos1-1
+
+    while index1>0:
+        prev_element = lt.getElement(artworks, index1)
+
+        if prev_element["Department"] == department:
+            pos1 -= 1
+            index1 -= 1
+        else:
+            break
+
+    return pos1
+
+
+def addInfoReq5(artwork_info, artwork, cost):
+    lt.addLast(artwork_info, artwork["ArtworkID"])       #pos 1: ID de la obra
+    lt.addLast(artwork_info, artwork["Title"])           #pos 2: Título de la orba
+    lt.addLast(artwork_info, artwork["ArtistName"])      #pos 3: Nombres de los autores
+    lt.addLast(artwork_info, artwork["Medium"])          #pos 4: Técnica de la obra
+    lt.addLast(artwork_info, artwork["Date"])            #pos 5: Fecha de la obra
+    lt.addLast(artwork_info, artwork["Dimensions"])      #pos 6: Dimensiones de la obra
+    lt.addLast(artwork_info, artwork["Classification"])  #pos 7: Clasificación de la obra
+    lt.addLast(artwork_info, str(cost))                  #pos 8: Costo de transporte
+
+
+def addTOP5Req5(info_stack, general_list):
+    for i in range(5, 0, -1): 
+        element = lt.getElement(general_list, i)
+        stack.push(info_stack, element)
+
+
+def moveArtworksReq5(catalog, department):
+    sortArtworks(catalog, 3, cmpArtworkByDepartment)
+    artworks = catalog["artworks"]
+    general_list = lt.newList("ARRAY_LIST")
+    total_cost = 0
+    total_weight = 0
+
+    pos = getInitPosReq5(artworks, department)
+    size_artworks = lt.size(artworks)
+
+    while pos<=size_artworks: #Peor caso: size(artworks) recorridos
+        artwork = lt.getElement(artworks, pos)
+        artwork_info = lt.newList("ARRAY_LIST")
+
+        if artwork["Department"] == department:
+            cost = round(calculateSingularCostReq5(artwork["Depth"], artwork["Diameter"],
+                                             artwork["Height"],artwork["Length"],
+                                             artwork["Weight"], artwork["Width"]),3)
+            addInfoReq5(artwork_info, artwork, cost)
+            lt.addLast(general_list, artwork_info)    
+
+            if artwork["Weight"] != "":
+                total_weight += float(artwork["Weight"])
+
+            total_cost += cost
+
+
+        else:
+            break
+
+        pos += 1
+
+    num_artworks = lt.size(general_list)
+
+    most_expensive = stack.newStack()
+    oldest = stack.newStack()
+
+    mso.sort(general_list, cmpArtworksByCost)
+    addTOP5Req5(most_expensive, general_list)
+
+    mso.sort(general_list, cmpArtworksByDate)
+    addTOP5Req5(oldest, general_list)
+
+    return num_artworks, round(total_cost,3), round(total_weight,3), most_expensive, oldest
+    
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 "Para Artistas"
@@ -641,6 +736,7 @@ def AuthorIDLowerThanGivenID(artist, id):                 #Requerimiento 2
 def AuthorIDGreaterThanGivenID(artist, id):               #Requerimiento 2
     return artist["ArtistID"] > id
 
+
 def compare_cantidad(cantidad1,cantidad2):                #Requerimiento 3
     return float(lt.getElement(cantidad1,1)) > float(lt.getElement(cantidad2,1))
 
@@ -649,8 +745,34 @@ def cmpByNumAuthors(nationality1, nationality2):          #Requerimiento 4
     return stack.top(nationality1) > stack.top(nationality2)
 
 
-def cmpArtworkByDate(artwork1,artwork2):                  #Requerimiento 5
-    int(artwork1["Date"]) < int(artwork2["Date"])
+def cmpArtworkByDepartment(artwork1,artwork2):            #Requerimiento 5
+    return artwork1["Department"] < artwork2["Department"]
+
+
+def cmpArtworksByCost(artwork1,artwork2):                 #Requerimiento 5
+    cost1 = lt.getElement(artwork1, 8)
+    cost2 = lt.getElement(artwork2, 8)
+    return float(cost1) > float(cost2)
+
+
+def cmpArtworksByDate(artwork1,artwork2):                 #Requerimiento 5
+    date1 = lt.getElement(artwork1, 5)
+    date2 = lt.getElement(artwork2, 5)
+
+    if date1 == "":
+        date1 = 9999
+    if date2 == "":
+        date2 = 9999
+
+    return int(date1) < int(date2)
+
+
+def DeptLowerThanGivenDepartment(artwork,department):     #Requerimiento 5
+    return artwork["Department"] < department
+
+
+def DeptGreaterThanGivenDepartment(artwork,department):   #Requerimiento 5
+    return artwork["Department"] > department
 
 
 # Funciones de ordenamiento

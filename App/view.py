@@ -54,7 +54,6 @@ def printMenu():
     print("30- Consultar Requerimiento 3")
     print("40- Consultar Requerimiento 4")
     print("50- Consultar Requerimiento 5")
-    print("60- Consultar Requerimiento 6")
     print("-----------------------------------------")
     print("0- Salir\n")
 
@@ -188,6 +187,7 @@ def printReq2Table(lst):
 
     print(tabulate(table, headers, tablefmt="grid"))
 
+
 def printReq3Table(lst):
     headers=['Title',"Date","Medium","Dimensions"]
     table=[]
@@ -201,6 +201,7 @@ def printReq3Table(lst):
             
         table.append([c1,c2,c3,c4])
     print(tabulate(table, headers, tablefmt="grid"))
+
 
 def printReq4Table(lst):
     headers1 = ["Nationality", "ArtWorks"]
@@ -257,6 +258,40 @@ def printReq4Table(lst):
     print(tabulate(table2, headers2, tablefmt="grid"))
 
 
+def printReq5Table(most_expensive, oldest):
+    headers = ['ObjectID','Title','ArtistsNames',"Medium","Date","Dimensions","Classification","TransCost (USD)"]
+    table1 = []
+    table2 = []
+
+    for i in range(5):
+        artwork1 = stack.pop(most_expensive)
+        c11 = adjustlenght(lt.getElement(artwork1, 1),8)
+        c12 = adjustlenght(lt.getElement(artwork1, 2),15)
+        c13 = adjustlenght(lt.getElement(artwork1, 3),15)
+        c14 = adjustlenght(lt.getElement(artwork1, 4),15)
+        c15 = lt.getElement(artwork1, 5)
+        c16 = adjustlenght(lt.getElement(artwork1, 6),15)
+        c17 = adjustlenght(lt.getElement(artwork1, 7),10)
+        c18 = lt.getElement(artwork1, 8)
+        table1.append([c11,c12,c13,c14,c15,c16,c17,c18])
+
+        artwork2 = stack.pop(oldest)
+        c21 = adjustlenght(lt.getElement(artwork2, 1),8)
+        c22 = adjustlenght(lt.getElement(artwork2, 2),15)
+        c23 = adjustlenght(lt.getElement(artwork2, 3),15)
+        c24 = adjustlenght(lt.getElement(artwork2, 4),15)
+        c25 = lt.getElement(artwork2, 5)
+        c26 = adjustlenght(lt.getElement(artwork2, 6),15)
+        c27 = adjustlenght(lt.getElement(artwork2, 7),10)
+        c28 = lt.getElement(artwork2, 8)
+        table2.append([c21,c22,c23,c24,c25,c26,c27,c28])
+
+    print("\n Las 5 obras más costosas de transportar son: ")
+    print(tabulate(table1, headers, tablefmt="grid"))
+    print("\n\n Las 5 obras más antiguas a transportar son: ")
+    print(tabulate(table2, headers, tablefmt="grid"))
+
+
 catalog = None
 
 """
@@ -270,7 +305,7 @@ while True:
     if int(inputs) == 1:
         #file_size = input("Ingrese el sufijo del archivo que desea utilizar (small, large, 10pct...): ")
         #sort_data = int(input("Si desea ordenar los datos al cargarlos, digite 1. De lo contrario, digite cualquier número: "))
-        file_size = "large"
+        file_size = "small"
         sort_data = 1
         sort_type = 3
 
@@ -373,6 +408,7 @@ while True:
         print("La tecnica mas usada es: " +str(TechniqueMoreUsed))
         printReq3Table(ListOfArtists)
 
+
     elif int(inputs) == 40:
         start_time = process_time()
         req4_list = controller.REQ4getNationalityCount(catalog)
@@ -386,11 +422,23 @@ while True:
 
 
     elif int(inputs) == 50:
-        pass
+        #department = input("Digite el departamento a transportar: ")
+        
+        #Para pruebas
+        department = "Drawings & Prints"
 
+        start_time = process_time()
+        num_artworks,total_cost,total_weight,most_expensive,oldest = controller.REQ5moveArtworks(catalog, department)
+        stop_time = process_time()
+        running_time = (stop_time - start_time)*1000
 
-    elif int(inputs) == 60:
-        pass
+        print("\n\n=============== Requerimiento Número 5 ===============")
+        print("Tiempo de ejecución: " + str(running_time) + " milisegundos\n")
+
+        print("\n Número de obras a transportas: " + str(num_artworks))
+        print("Costo total calculado: " + str(total_cost))
+        print("Peso total calculado: " + str(total_weight))
+        printReq5Table(most_expensive, oldest)
 
 
     else:
