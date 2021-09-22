@@ -188,6 +188,19 @@ def printReq2Table(lst):
 
     print(tabulate(table, headers, tablefmt="grid"))
 
+def printReq3Table(lst):
+    headers=['Title',"Date","Medium","Dimensions"]
+    table=[]
+    SizeOfList=lt.size(lst)
+    for pos in range(SizeOfList):
+        lista = lt.getElement(lst,pos)
+        c1 = adjustlenght(lt.getElement(lista, 1), 18)
+        c2 = adjustlenght(lt.getElement(lista, 2), 12)
+        c3 = adjustlenght(lt.getElement(lista, 3), 18)
+        c4 = adjustlenght(lt.getElement(lista, 4), 18)
+            
+        table.append([c1,c2,c3,c4])
+    print(tabulate(table, headers, tablefmt="grid"))
 
 def printReq4Table(lst):
     headers1 = ["Nationality", "ArtWorks"]
@@ -346,8 +359,19 @@ while True:
         
 
     elif int(inputs) == 30:
-        pass
-
+        Name=input("Por favor ingrese el nombre del artista: ")
+        
+        start_time = process_time()
+        NumberOfArtworks,TechniqueMoreUsed,NumberOfTechniques,ListOfArtists = controller.REQ3get_techniquees(catalog,Name)
+        stop_time = process_time()
+        running_time = (stop_time - start_time)*1000
+        print("\n\n=============== Requerimiento Número 3 ===============")
+        print("Tiempo de ejecución: " + str(running_time) + " milisegundos")
+        
+        print("\n"+Name+" tiene "+ str(NumberOfArtworks) +" obras en MoMA")
+        print("Ademas, tiene "+str(NumberOfTechniques)+" medios o tecnicas en sus trabajos")
+        print("La tecnica mas usada es: " +str(TechniqueMoreUsed))
+        printReq3Table(ListOfArtists)
 
     elif int(inputs) == 40:
         start_time = process_time()
