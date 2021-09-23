@@ -1,27 +1,9 @@
 ﻿"""
- * Copyright 2020, Departamento de sistemas y Computación,
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Contribuciones:
- *
- * Dario Correal - Version inicial
+Reto 1 - model.py
+
+Carlos Arturo Holguín Cárdenas
+Daniel Hernández Pineda
+
  """
 
 
@@ -35,16 +17,12 @@ from DISClib.Algorithms.Sorting import mergesort as mso
 from DISClib.Algorithms.Sorting import quicksort as qso
 assert cf
 
-"""
-Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
-los mismos.
-"""
 
 # Construccion de modelos
 
 def newCatalog(list_type):
     """
-    Inicializa el catálogo de obras.
+    Inicializa el catálogo de obras y artistas
     """
     catalog = {"artists": None,
                "artworks": None}
@@ -63,7 +41,9 @@ def newCatalog(list_type):
 # Funciones para agregar informacion al catalogo
 
 def addArtist(catalog, artist):
-    # Se adiciona el artista a la lista de artistas
+    """
+    Se adiciona el artista a la lista de artistas
+    """
     Arti_r=artists_required(artist["ConstituentID"],
                             artist["DisplayName"],
                             artist["BeginDate"],
@@ -103,6 +83,9 @@ def addArtwork(catalog, artwork):
 # Funciones para creacion de datos
 
 def splitAuthorsIDs(authorsIDs):
+    """
+    Separa los IDs de los autores de una obra en una lista
+    """
     authors=authorsIDs.replace(",","")
     authors = authors.replace("[","")
     authors=authors.replace("]","")
@@ -150,6 +133,9 @@ def addArtistsNames(catalog, artwork):
 
 
 def artists_required(artistID,name,begindate,end,nationality,gender):
+    """
+    Define la información útil para cargar en el catálogo de artistas
+    """
     artist={"ArtistID":artistID,
             'Name':name,
             'BeginDate':begindate,
@@ -162,6 +148,9 @@ def artists_required(artistID,name,begindate,end,nationality,gender):
 def artworks_required(artworkID,title,artistID,date,medium,dimensions,
                     classification,department,dateacquired,creditline, url,
                     depth, diameter, height, length, weight, width):
+    """
+    Define la información útil para cargar en el catálogo de obras
+    """
     artwork={"ArtworkID":artworkID,
             "Title": title,
             "ArtistID":artistID,
@@ -283,7 +272,7 @@ def binary_searchReq2(lst, value, lowercmpfunction, greatercmpfunction):
     return -1
 
 
-def getArtworksInfoReq21(catalog, date_initial, date_final):
+def getArtworksInfoReq2(catalog, date_initial, date_final):
     artworks = catalog["artworks"]
     Artworks_final=lt.newList("ARRAY_LIST") #ARRAY_LIST para acceder a cada posición con tiempo constante
     
@@ -427,7 +416,7 @@ def nationalityListReq4(catalog):
     """
     Crea una lista, cuyos elementos son listas que tienen en la posición 1 una nacionalidad y en sus 
     demás posiciones los IDs de los artistas que pertenecen a esa nacionalidad. Devuelve esta lista 
-    junto con un directorio. Complejidad O(n)
+    junto con un directorio. Complejidad O(m)
     """
     artists = catalog["artists"]
     nationalities = lt.newList("ARRAY_LIST") #Lista que guarda los nombres de las nacionalidades (sin IDs)
@@ -471,7 +460,7 @@ def getNationalityCountReq4(catalog):
 
     while lt.size(nationalities)>0:  # size(nationalities) ciclos
         nationality = lt.removeFirst(nationalities)
-        country_stack = stack.newStack() #¿Buena idea hacer un stack?
+        country_stack = stack.newStack()
         artworks_info = lt.newList("ARRAY_LIST")
 
         stack.push(country_stack, nationality)
@@ -499,7 +488,7 @@ def getNationalityCountReq4(catalog):
         authorsIDS = artwork["ArtistID"]
         authors_queue = splitAuthorsIDs(authorsIDS)
         
-        while queue.size(authors_queue)>0: #No más de X ciclos
+        while queue.size(authors_queue)>0: #No más de max(autores por obra) ciclos
             authorID = queue.dequeue(authors_queue)
 
             pos_nationality = 1

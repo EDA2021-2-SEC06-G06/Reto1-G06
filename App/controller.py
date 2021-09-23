@@ -1,23 +1,9 @@
 ﻿"""
- * Copyright 2020, Departamento de sistemas y Computación,
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
+Reto 1 - controller.py
+
+Carlos Arturo Holguín Cárdenas
+Daniel Hernández Pineda
+
  """
 
 import config as cf
@@ -33,7 +19,7 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 def initCatalog(list_type):
     """
-    Llama la funcion de inicializacion del catalogo del modelo.
+    Llama la funcion de inicializació del catálogo del modelo
     """
     catalog = model.newCatalog(list_type)
     return catalog
@@ -43,8 +29,7 @@ def initCatalog(list_type):
 
 def loadData(catalog, file_size, sort_data, sort_type):
     """
-    Carga los datos de los archivos y cargar los datos en la
-    estructura de datos
+    Carga los datos de los archivos y los ordena
     """
     loadArtists(catalog, file_size)
     loadArtworks(catalog, file_size)
@@ -56,7 +41,7 @@ def loadData(catalog, file_size, sort_data, sort_type):
 
 def loadArtists(catalog, file_size):
     """
-    Carga los artistas del archivo.
+    Carga los artistas del archivo
     """
     artistsfile = cf.data_dir + 'Artists-utf8-' + file_size + '.csv'
     input_file = csv.DictReader(open(artistsfile, encoding='utf-8'))
@@ -66,7 +51,7 @@ def loadArtists(catalog, file_size):
 
 def loadArtworks(catalog, file_size):
     """
-    Carga las obras del archivo.
+    Carga las obras del archivo
     """
     sortArtists(catalog, 3, model.cmpArtistByAuthorID)
     artworksfile = cf.data_dir + 'Artworks-utf8-' + file_size + '.csv'
@@ -79,14 +64,14 @@ def loadArtworks(catalog, file_size):
 
 def sortArtists(catalog, sort_type, cmpfunction=model.cmpArtistByBeginDate):
     """
-    Ordena los artistas por fecha de nacimiento
+    Ordena los artistas según la función de comparación dada
     """
     model.sortArtists(catalog, sort_type, cmpfunction)
 
 
 def sortArtworks(catalog, sort_type, cmpfunction):
     """
-    Ordena las obras por fecha de adquisición
+    Ordena las obras según la función de comparación dada
     """
     model.sortArtworks(catalog, sort_type, cmpfunction)
 
@@ -98,7 +83,7 @@ def REQ1getArtistsRange(catalog, date_initial, date_final):
 
 
 def REQ2getArtworksRange(catalog, date_initial, date_final):
-    return model.getArtworksInfoReq21(catalog, date_initial, date_final)
+    return model.getArtworksInfoReq2(catalog, date_initial, date_final)
 
 
 def REQ3get_techniquees(catalog,Name):

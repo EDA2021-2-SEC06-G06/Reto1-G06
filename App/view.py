@@ -1,23 +1,9 @@
 ﻿"""
- * Copyright 2020, Departamento de sistemas y Computación, Universidad
- * de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
+Reto 1 - view.py
+
+Carlos Arturo Holguín Cárdenas
+Daniel Hernández Pineda
+
  """
 
 import config as cf
@@ -33,12 +19,6 @@ assert cf
 default_limit = 1000
 sys.setrecursionlimit(default_limit*10)
 
-"""
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
-"""
 
 def printMenu():
     print("\n\n-----------------------------------------")
@@ -86,22 +66,23 @@ def printFirst(lst, num):
     """
     for pos in range(1,num+1):
         print(lt.getElement(lst, pos))
+        print("")
 
 
 def printLast(lst, num):
     """
     Imprime los últimos num elementos de la lista.
-
-    Nota: Para un algoritmo de menor orden de crecimiento en el caso de la lista encadenada,
-          habría que crear un método alternativo al getElement() para este tipo de lista 
-          puesto que se recorre casi completa por cada elemento que se busca.
     """
     for x in range(num-1, -1,-1):
         pos = lt.size(lst) - x
         print(lt.getElement(lst, pos))
+        print("")
 
 
 def adjustlenght(text, step):
+    """
+    Inserta renglones en una cadena de caracteres para que se ajuste al formato de una tabla
+    """
     lenght = len(text)
 
     for n in range(step, 20*step + 1, step):
@@ -112,6 +93,9 @@ def adjustlenght(text, step):
 
 
 def printReq1Table(lst):
+    """
+    Imprime la tabla del Requerimiento 1
+    """
     headers = ["ConstituentID", "Name", "BeginDate", "EndDate", "Nationality", "Gender"]
     table = []
 
@@ -155,6 +139,9 @@ def printReq1Table(lst):
 
 
 def printReq2Table(lst):
+    """
+    Imprime la tabla del Requerimiento 2
+    """
     headers = ['ObjectID','Title','ArtistsNames',"Medium","Dimensions","Date","DateAcquired"]
     table = []
 
@@ -189,6 +176,9 @@ def printReq2Table(lst):
 
 
 def printReq3Table(lst):
+    """
+    Imprime la tabla del Requerimiento 3
+    """
     headers=['Title',"Date","Medium","Dimensions"]
     table=[]
     SizeOfList=lt.size(lst)
@@ -204,6 +194,9 @@ def printReq3Table(lst):
 
 
 def printReq4Table(lst):
+    """
+    Imprime las tablas del Requerimiento 4
+    """
     headers1 = ["Nationality", "ArtWorks"]
     headers2 = ['ObjectID','Title','ArtistsNames',"Date","Medium","Dimensions"]
     table1 = []
@@ -259,6 +252,9 @@ def printReq4Table(lst):
 
 
 def printReq5Table(most_expensive, oldest):
+    """
+    Imprime las tablas del Requerimiento 5
+    """
     headers = ['ObjectID','Title','ArtistsNames',"Medium","Date","Dimensions","Classification","TransCost (USD)"]
     table1 = []
     table2 = []
@@ -303,9 +299,9 @@ while True:
 
 
     if int(inputs) == 1:
-        #file_size = input("Ingrese el sufijo del archivo que desea utilizar (small, large, 10pct...): ")
+        file_size = input("Ingrese el sufijo del archivo que desea utilizar (small, large, 10pct...): ")
         #sort_data = int(input("Si desea ordenar los datos al cargarlos, digite 1. De lo contrario, digite cualquier número: "))
-        file_size = "small"
+        #file_size = "small"
         sort_data = 1
         sort_type = 3
 
@@ -351,12 +347,12 @@ while True:
 
 
     elif int(inputs) == 10:
-        #a_inicial = int(input("Ingrese el año inicial: "))
-        #a_final = int(input("Ingrese el año final: "))
+        a_inicial = int(input("Ingrese el año inicial: "))
+        a_final = int(input("Ingrese el año final: "))
 
         #Para pruebas de rendimiento
-        a_inicial = 0
-        a_final = 2022
+        #a_inicial = 0
+        #a_final = 2022
 
         start_time = process_time()
         req1, count = controller.REQ1getArtistsRange(catalog, a_inicial, a_final)
@@ -372,12 +368,12 @@ while True:
 
 
     elif int(inputs) == 20:
-        #date_initial = input("Ingrese la fecha de adquisición inicial en formato AAAA-MM-DD: ")
-        #date_final = input("Ingrese la fecha de adquisición final en formato AAAA-MM-DD: ")
+        date_initial = input("Ingrese la fecha de adquisición inicial en formato AAAA-MM-DD: ")
+        date_final = input("Ingrese la fecha de adquisición final en formato AAAA-MM-DD: ")
 
         #Para pruebas de rendimiento
-        date_initial = "1900-01-01"
-        date_final = "2022-12-31"
+        #date_initial = "1900-01-01"
+        #date_final = "2022-12-31"
 
         start_time = process_time()
         req2,artworks_count,purchase_count = controller.REQ2getArtworksRange(catalog, date_initial, date_final)
@@ -387,7 +383,7 @@ while True:
         print("\n\n=============== Requerimiento Número 2 ===============")
         print("Tiempo de ejecución: " + str(running_time) + " milisegundos")
     
-        print("\nSe encontraron " + str(artworks_count) + " obras adquiridas entre la fecha " + date_initial + " y la fecha " + date_final + ".")
+        print("\nSe encontraron " + str(artworks_count) + " obras adquiridas entre " + date_initial + " y " + date_final + ".")
         print(str(purchase_count) + " fueron adquiridas por compra" + "\n")
         print("Las primeras y últimas 3 compras en el rango fueron:       (se recomienda ampliar la vista de la Terminal para observar mejor la tabla)")
         printReq2Table(req2)
@@ -422,10 +418,10 @@ while True:
 
 
     elif int(inputs) == 50:
-        #department = input("Digite el departamento a transportar: ")
+        department = input("Digite el departamento a transportar: ")
         
         #Para pruebas
-        department = "Drawings & Prints"
+        #department = "Drawings & Prints"
 
         start_time = process_time()
         num_artworks,total_cost,total_weight,most_expensive,oldest = controller.REQ5moveArtworks(catalog, department)
@@ -435,7 +431,7 @@ while True:
         print("\n\n=============== Requerimiento Número 5 ===============")
         print("Tiempo de ejecución: " + str(running_time) + " milisegundos\n")
 
-        print("\n Número de obras a transportas: " + str(num_artworks))
+        print("\nNúmero de obras a transportar: " + str(num_artworks))
         print("Costo total calculado: " + str(total_cost))
         print("Peso total calculado: " + str(total_weight))
         printReq5Table(most_expensive, oldest)
